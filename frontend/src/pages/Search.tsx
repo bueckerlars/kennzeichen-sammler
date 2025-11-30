@@ -6,9 +6,11 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { ArrowLeft, Plus } from 'lucide-react';
+import { useToast } from '../hooks/use-toast';
 
 export default function Search() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<LicensePlate[]>([]);
   const [loading, setLoading] = useState(false);
@@ -40,12 +42,27 @@ export default function Search() {
     setAdding(plateId);
     try {
       await collectionApi.addToCollection(plateId);
-      alert('Kennzeichen zur Sammlung hinzugefügt!');
+      toast({
+        variant: 'success',
+        title: 'Erfolgreich hinzugefügt',
+        description: 'Das Kennzeichen wurde zu deiner Sammlung hinzugefügt.',
+      });
+      // Clear search after successful add
+      setQuery('');
+      setResults([]);
     } catch (error: any) {
       if (error.response?.status === 409) {
-        alert('Dieses Kennzeichen ist bereits in deiner Sammlung!');
+        toast({
+          variant: 'destructive',
+          title: 'Bereits vorhanden',
+          description: 'Dieses Kennzeichen ist bereits in deiner Sammlung.',
+        });
       } else {
-        alert('Fehler beim Hinzufügen');
+        toast({
+          variant: 'destructive',
+          title: 'Fehler',
+          description: 'Das Kennzeichen konnte nicht hinzugefügt werden.',
+        });
       }
     } finally {
       setAdding(null);
