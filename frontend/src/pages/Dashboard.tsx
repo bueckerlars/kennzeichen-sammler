@@ -3,12 +3,12 @@ import { useAuth } from '../context/AuthContext';
 import { statisticsApi } from '../services/api';
 import type { Statistics } from '../types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
+import { UserMenu } from '../components/UserMenu';
 import { useNavigate } from 'react-router-dom';
 import { Search, List, Trophy } from 'lucide-react';
 
 export default function Dashboard() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [statistics, setStatistics] = useState<Statistics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -37,16 +37,14 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold">Dashboard</h1>
             <p className="text-muted-foreground">Willkommen, {user?.username}</p>
           </div>
-          <Button variant="outline" onClick={logout}>
-            Abmelden
-          </Button>
+          <UserMenu />
         </div>
 
         {statistics && (
@@ -94,7 +92,7 @@ export default function Dashboard() {
                 <div className="text-3xl font-bold">
                   {statistics.percentage.toFixed(1)}%
                 </div>
-                <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                <div className="mt-2 w-full bg-muted rounded-full h-2">
                   <div
                     className="bg-primary h-2 rounded-full"
                     style={{ width: `${statistics.percentage}%` }}
