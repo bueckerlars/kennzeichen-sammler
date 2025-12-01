@@ -94,6 +94,48 @@ Die Anwendung ist dann verfügbar unter:
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:3001
 
+### Makefile Workflows
+
+Für wiederkehrende Aufgaben kannst du das `Makefile` im Projektroot verwenden:
+
+- **Dependencies installieren**
+  ```bash
+  make install
+  ```
+
+- **(Platzhalter-)Tests ausführen**
+  ```bash
+  make test
+  ```
+
+- **Build der Docker-Services und des Fullstack-Images**
+  ```bash
+  # baut docker-compose Services (postgres, backend, frontend)
+  # und das Fullstack-Image (Backend + Frontend in einem Container)
+  make build
+  ```
+
+- **Lokal deployen (via docker compose)**
+  ```bash
+  make deploy
+  # Alias:
+  make up
+  ```
+
+- **Fullstack-Image bauen und zu Docker Hub pushen**
+  ```bash
+  # vorab bei Docker Hub einloggen:
+  # docker login
+
+  # FULLSTACK_IMAGE und TAG kannst du bei Bedarf anpassen
+  FULLSTACK_IMAGE=myuser/kennzeichen-sammler TAG=latest make build_and_push
+  ```
+
+Weitere Hilfstargets:
+
+- `make down` – Stoppt und entfernt die docker-compose Services.
+- `make logs` – Zeigt die Logs des docker-compose Stacks an (`-f` für Follow).
+
 ## Umgebungsvariablen
 
 Siehe `.env.example` für alle verfügbaren Konfigurationsoptionen.

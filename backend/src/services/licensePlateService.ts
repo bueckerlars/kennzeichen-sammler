@@ -12,12 +12,34 @@ export class LicensePlateService {
   }
 
   async search(query: string): Promise<LicensePlate[]> {
+    const normalizedQuery = query.toLowerCase();
+
     return await this.licensePlateRepository
       .createQueryBuilder('plate')
-      .where('plate.code LIKE :query', { query: `%${query}%` })
-      .orWhere('plate.city LIKE :query', { query: `%${query}%` })
-      .orWhere('plate.state LIKE :query', { query: `%${query}%` })
-      .orderBy('plate.code', 'ASC')
+      .where('LOWER(plate.code) LIKE :containsQuery', {
+        containsQuery: `%${normalizedQuery}%`,
+      })
+      .orWhere('LOWER(plate.city) LIKE :containsQuery', {
+        containsQuery: `%${normalizedQuery}%`,
+      })
+      .orWhere('LOWER(plate.state) LIKE :containsQuery', {
+        containsQuery: `%${normalizedQuery}%`,
+      })
+      // Relevanz: exakter Code > Code beginnt mit Query > sonstige Treffer
+      .addSelect(
+        `CASE
+          WHEN LOWER(plate.code) = :exactQuery THEN 0
+          WHEN LOWER(plate.code) LIKE :prefixQuery THEN 1
+          ELSE 2
+        END`,
+        'relevance',
+      )
+      .setParameters({
+        exactQuery: normalizedQuery,
+        prefixQuery: `${normalizedQuery}%`,
+      })
+      .orderBy('relevance', 'ASC')
+      .addOrderBy('plate.code', 'ASC')
       .getMany();
   }
 
