@@ -52,7 +52,7 @@ export default function Leaderboard() {
           </Button>
         )}
 
-        <Card className={isMobile ? 'mb-4' : 'mb-6'}>
+        <Card className={`${isMobile ? 'mb-4' : 'mb-6'} hover:shadow-xl transition-all duration-300`}>
           <CardHeader>
             <CardTitle className={`flex items-center gap-2 ${isMobile ? 'text-xl' : ''}`}>
               <Trophy className="h-5 w-5" />
@@ -69,10 +69,10 @@ export default function Leaderboard() {
                 {leaderboard.map((entry, index) => (
                   <div
                     key={entry.userId}
-                    className={`flex items-center justify-between ${isMobile ? 'p-3 min-h-[60px]' : 'p-4'} rounded-lg border touch-manipulation ${
+                    className={`flex items-center justify-between ${isMobile ? 'p-3 min-h-[60px]' : 'p-4'} rounded-2xl border touch-manipulation transition-all duration-300 hover:shadow-lg hover:scale-[1.01] ${
                       entry.userId === user?.id
-                        ? 'bg-primary/10 border-primary'
-                        : 'bg-card'
+                        ? 'bg-primary/10 border-primary shadow-md'
+                        : 'bg-card/80 backdrop-blur-sm'
                     }`}
                   >
                     <div className="flex items-center gap-3 md:gap-4">

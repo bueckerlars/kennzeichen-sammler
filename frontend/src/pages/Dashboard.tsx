@@ -196,39 +196,42 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
-      {/* Sticky Search Bar on Mobile */}
+      {isMobile && <div className="h-20" />}
+      {/* Floating Search Bar on Mobile */}
       {isMobile && (
-        <div className="sticky top-0 z-40 bg-background border-b px-2 py-3 md:hidden">
+        <div className="fixed top-4 left-4 right-4 z-50 md:hidden">
           <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
             <PopoverAnchor asChild>
-              <div className="relative w-full">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                <Input
-                  ref={inputRef}
-                  type="text"
-                  placeholder="Suche nach Code, Stadt oder Bundesland..."
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    if (!popoverOpen) {
-                      setPopoverOpen(true);
-                    }
-                  }}
-                  onFocus={() => {
-                    if (searchQuery.length > 0 || searchResults.length > 0) {
-                      setPopoverOpen(true);
-                    }
-                  }}
-                  onClick={() => {
-                    if (searchQuery.length > 0 || searchResults.length > 0) {
-                      setPopoverOpen(true);
-                    }
-                  }}
-                  className="pl-10 w-full"
-                />
+              <div className="relative w-full glass rounded-3xl shadow-xl">
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none z-10" />
+                  <Input
+                    ref={inputRef}
+                    type="text"
+                    placeholder="Suche nach Code, Stadt oder Bundesland..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      if (!popoverOpen) {
+                        setPopoverOpen(true);
+                      }
+                    }}
+                    onFocus={() => {
+                      if (searchQuery.length > 0 || searchResults.length > 0) {
+                        setPopoverOpen(true);
+                      }
+                    }}
+                    onClick={() => {
+                      if (searchQuery.length > 0 || searchResults.length > 0) {
+                        setPopoverOpen(true);
+                      }
+                    }}
+                    className="pl-12 pr-4 py-4 h-auto w-full rounded-3xl bg-transparent border-0 focus-visible:ring-2 focus-visible:ring-primary/20 transition-all duration-300"
+                  />
+                </div>
               </div>
             </PopoverAnchor>
-            <PopoverContent className="w-[calc(100vw-1rem)] p-0" align="start" onOpenAutoFocus={(e) => e.preventDefault()}>
+            <PopoverContent className="w-[calc(100vw-2rem)] p-0 glass rounded-2xl shadow-xl border-0 mt-3" align="start" onOpenAutoFocus={(e) => e.preventDefault()}>
               <div className="max-h-[60vh] overflow-y-auto">
                 {searchQuery.length > 0 && searchResults.length === 0 && !searchLoading && (
                   <div className="p-4 text-center text-muted-foreground">
@@ -366,7 +369,7 @@ export default function Dashboard() {
                     />
                   </div>
                 </PopoverAnchor>
-                <PopoverContent className="w-[500px] p-0" align="end" onOpenAutoFocus={(e) => e.preventDefault()}>
+                <PopoverContent className="w-[500px] p-0 glass rounded-2xl shadow-xl border-0" align="end" onOpenAutoFocus={(e) => e.preventDefault()}>
                 <div className="max-h-[600px] overflow-y-auto">
                   {searchQuery.length > 0 && searchResults.length === 0 && !searchLoading && (
                     <div className="p-4 text-center text-muted-foreground">
@@ -464,7 +467,7 @@ export default function Dashboard() {
 
         {statistics && (
           <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mb-6 md:mb-8">
-            <Card>
+            <Card className="hover:shadow-xl transition-all duration-300">
               {isMobile ? (
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
@@ -488,7 +491,7 @@ export default function Dashboard() {
               )}
             </Card>
 
-            <Card>
+            <Card className="hover:shadow-xl transition-all duration-300">
               {isMobile ? (
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
@@ -516,7 +519,7 @@ export default function Dashboard() {
               )}
             </Card>
 
-            <Card>
+            <Card className="hover:shadow-xl transition-all duration-300">
               {isMobile ? (
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
@@ -544,7 +547,7 @@ export default function Dashboard() {
               )}
             </Card>
 
-            <Card>
+            <Card className="hover:shadow-xl transition-all duration-300">
               {isMobile ? (
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
@@ -588,7 +591,7 @@ export default function Dashboard() {
 
         {!isMobile && (
           <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 mb-6 md:mb-8">
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow min-h-[44px] touch-manipulation" onClick={() => navigate('/collection')}>
+            <Card className="cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all duration-300 min-h-[44px] touch-manipulation" onClick={() => navigate('/collection')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <List className="h-5 w-5" />
@@ -600,7 +603,7 @@ export default function Dashboard() {
               </CardHeader>
             </Card>
 
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow min-h-[44px] touch-manipulation" onClick={() => navigate('/leaderboard')}>
+            <Card className="cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all duration-300 min-h-[44px] touch-manipulation" onClick={() => navigate('/leaderboard')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Trophy className="h-5 w-5" />
@@ -615,7 +618,7 @@ export default function Dashboard() {
         )}
 
         {statistics && statistics.byState.length > 0 && (
-          <Card>
+          <Card className="hover:shadow-xl transition-all duration-300">
             <CardHeader>
               <CardTitle>Statistiken nach Bundesland</CardTitle>
             </CardHeader>

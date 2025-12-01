@@ -71,7 +71,7 @@ export default function Collection() {
         <h1 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold ${isMobile ? 'mb-4' : 'mb-6'}`}>Meine Sammlung</h1>
 
         {collections.length === 0 ? (
-          <Card>
+          <Card className="hover:shadow-xl transition-all duration-300">
             <CardContent className="py-8 text-center text-muted-foreground">
               Deine Sammlung ist noch leer. Beginne mit der Suche!
             </CardContent>
@@ -79,7 +79,7 @@ export default function Collection() {
         ) : (
           <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {collections.map((collection) => (
-              <Card key={collection.id}>
+              <Card key={collection.id} className="hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <CardTitle className={`${isMobile ? 'text-xl' : 'text-2xl'}`}>

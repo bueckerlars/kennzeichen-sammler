@@ -339,18 +339,21 @@ export default function Search() {
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
-      {/* Sticky Search Bar on Mobile */}
+      {isMobile && <div className="h-20" />}
+      {/* Floating Search Bar on Mobile */}
       {isMobile && (
-        <div className="sticky top-0 z-40 bg-background border-b px-2 py-3 md:hidden">
-          <div className="relative w-full">
-            <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Suche nach Code, Stadt oder Bundesland..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="pl-10"
-            />
+        <div className="fixed top-4 left-4 right-4 z-50 md:hidden">
+          <div className="relative w-full glass rounded-3xl shadow-xl">
+            <div className="relative">
+              <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
+              <Input
+                type="text"
+                placeholder="Suche nach Code, Stadt oder Bundesland..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="pl-12 pr-4 py-4 h-auto rounded-3xl bg-transparent border-0 focus-visible:ring-2 focus-visible:ring-primary/20 transition-all duration-300"
+              />
+            </div>
           </div>
         </div>
       )}
@@ -438,7 +441,7 @@ export default function Search() {
         )}
 
         {!loading && query && results.length === 0 && (
-          <Card>
+          <Card className="hover:shadow-xl transition-all duration-300">
             <CardContent className="py-8 text-center text-muted-foreground">
               Keine Ergebnisse gefunden
             </CardContent>
@@ -453,7 +456,7 @@ export default function Search() {
 
             {view === 'table' ? (
               isMobile ? (
-                <div className="space-y-1">
+                <div className="space-y-2">
                   {(isMobile ? mobileResults : results).map((plate) => {
                     const collectionEntry = collections.find(
                       (c) => c.licensePlateId === plate.id,
@@ -461,7 +464,7 @@ export default function Search() {
                     const inCollection = !!collectionEntry;
 
                     return (
-                      <Card key={plate.id} className="p-2">
+                      <Card key={plate.id} className="p-3 hover:shadow-xl transition-all duration-300">
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
@@ -504,7 +507,7 @@ export default function Search() {
                   })}
                 </div>
               ) : (
-                <Card>
+                <Card className="hover:shadow-xl transition-all duration-300">
                   <TableComponent>
                     <TableHeader>
                       <TableRow>
@@ -576,7 +579,7 @@ export default function Search() {
                   const inCollection = !!collectionEntry;
 
                   return (
-                    <Card key={plate.id}>
+                    <Card key={plate.id} className="hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
                       <CardHeader>
                         <CardTitle className="text-2xl flex items-center justify-between">
                           <span>{plate.code}</span>
@@ -654,7 +657,7 @@ export default function Search() {
         )}
 
         {!query && (
-          <Card>
+          <Card className="hover:shadow-xl transition-all duration-300">
             <CardContent className="py-8 text-center text-muted-foreground">
               Beginne mit der Suche...
             </CardContent>
