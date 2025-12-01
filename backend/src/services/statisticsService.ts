@@ -53,6 +53,8 @@ export class StatisticsService {
   }
 
   async getLeaderboard() {
+    const totalPlates = await this.licensePlateRepository.count();
+    
     const leaderboard = await this.collectionRepository
       .createQueryBuilder('collection')
       .leftJoinAndSelect('collection.user', 'user')
@@ -65,11 +67,14 @@ export class StatisticsService {
       .limit(100)
       .getRawMany();
 
-    return leaderboard.map((entry) => ({
-      userId: entry.userId,
-      username: entry.username,
-      count: parseInt(entry.count),
-    }));
+    return {
+      entries: leaderboard.map((entry) => ({
+        userId: entry.userId,
+        username: entry.username,
+        count: parseInt(entry.count),
+      })),
+      totalPlates,
+    };
   }
 }
 

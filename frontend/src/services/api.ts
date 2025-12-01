@@ -4,7 +4,7 @@ import type {
   LicensePlate,
   UserCollection,
   Statistics,
-  LeaderboardEntry,
+  LeaderboardResponse,
   SearchResult,
 } from '../types';
 
@@ -103,7 +103,7 @@ export const statisticsApi = {
     return response.data;
   },
 
-  getLeaderboard: async (): Promise<LeaderboardEntry[]> => {
+  getLeaderboard: async (): Promise<LeaderboardResponse> => {
     const response = await api.get('/statistics/leaderboard');
     return response.data;
   },

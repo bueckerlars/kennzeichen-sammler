@@ -41,6 +41,11 @@ export interface LeaderboardEntry {
   count: number;
 }
 
+export interface LeaderboardResponse {
+  entries: LeaderboardEntry[];
+  totalPlates: number;
+}
+
 export interface SearchResult {
   data: LicensePlate[];
   total: number;
