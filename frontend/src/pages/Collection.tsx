@@ -6,6 +6,7 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { ArrowLeft, Trash2 } from 'lucide-react';
 import { useIsMobile } from '../hooks/use-mobile';
+import { MobileUserMenu } from '../components/MobileUserMenu';
 
 export default function Collection() {
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ export default function Collection() {
 
   return (
     <div className="min-h-screen pb-20 md:pb-0">
-      <div className="container mx-auto px-2 md:px-4 py-4 md:py-8">
+      <div className={`${isMobile ? 'px-2 py-4' : 'container mx-auto px-4 py-8'}`}>
         {!isMobile && (
           <Button
             variant="ghost"
@@ -68,21 +69,72 @@ export default function Collection() {
           </Button>
         )}
 
-        <h1 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold ${isMobile ? 'mb-4' : 'mb-6'}`}>Meine Sammlung</h1>
-
-        {collections.length === 0 ? (
-          <Card>
-            <CardContent className="py-8 text-center text-muted-foreground">
-              Deine Sammlung ist noch leer. Beginne mit der Suche!
-            </CardContent>
-          </Card>
+        <Card className={`${isMobile ? 'mb-4' : 'mb-6'} w-full`}>
+          <CardHeader>
+            <div className="flex items-center justify-between gap-3">
+              <CardTitle className={`flex items-center gap-2 ${isMobile ? 'text-xl' : 'text-2xl'}`}>
+                Meine Sammlung
+              </CardTitle>
+              {isMobile && (
+                <div className="shrink-0">
+                  <MobileUserMenu />
+                </div>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent className={isMobile ? 'p-3' : ''}>
+            {collections.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                Deine Sammlung ist noch leer. Beginne mit der Suche!
+              </div>
+            ) : isMobile ? (
+          <div className="space-y-3">
+            {collections.map((collection, index) => (
+              <div
+                key={collection.id}
+                className="glass-light rounded-2xl p-3 transition-colors duration-300"
+                style={{ animationDelay: `${0.1 + index * 0.02}s` }}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="text-base font-bold">{collection.licensePlate?.code}</div>
+                    </div>
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      <span className="truncate">{collection.licensePlate?.city}</span>
+                      <span>•</span>
+                      <span>{collection.licensePlate?.state}</span>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {new Date(collection.spottedDate).toLocaleDateString('de-DE', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                      })}
+                    </div>
+                  </div>
+                  <div className="shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemove(collection.id)}
+                      disabled={deleting === collection.id}
+                      className="min-h-[44px] min-w-[44px] touch-manipulation text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         ) : (
           <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {collections.map((collection) => (
               <Card key={collection.id}>
                 <CardHeader>
                   <div className="flex justify-between items-start">
-                    <CardTitle className={`${isMobile ? 'text-xl' : 'text-2xl'}`}>
+                    <CardTitle className="text-2xl">
                       {collection.licensePlate?.code}
                     </CardTitle>
                     <Button
@@ -116,6 +168,8 @@ export default function Collection() {
             ))}
           </div>
         )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

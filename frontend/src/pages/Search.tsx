@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { ArrowLeft, Plus, Trash2, Search as SearchIcon, Table, Grid } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import { useIsMobile } from '../hooks/use-mobile';
+import { MobileUserMenu } from '../components/MobileUserMenu';
 import {
   Table as TableComponent,
   TableBody,
@@ -340,20 +341,25 @@ export default function Search() {
   return (
     <div className="min-h-screen pb-20 md:pb-0">
       {isMobile && <div className="h-20" />}
-      {/* Floating Search Bar on Mobile */}
+      {/* Floating Search Bar and Avatar on Mobile */}
       {isMobile && (
-        <div className="fixed top-4 left-4 right-4 z-50 md:hidden">
-          <div className="relative w-full glass-strong rounded-3xl shadow-2xl transition-all duration-300 has-[:focus]:scale-[1.02] has-[:focus]:shadow-2xl">
-            <div className="relative">
-              <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
-              <Input
-                type="text"
-                placeholder="Suche nach Code, Stadt oder Bundesland..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="pl-12 pr-4 py-4 h-auto rounded-3xl bg-transparent border-0 focus-visible:ring-2 focus-visible:ring-primary/20 transition-all duration-300"
-              />
+        <div className="fixed top-4 left-4 right-4 z-50 md:hidden flex items-center gap-3">
+          <div className="flex-1">
+            <div className="relative w-full glass-strong rounded-3xl shadow-2xl transition-all duration-300 has-[:focus]:scale-[1.02] has-[:focus]:shadow-2xl">
+              <div className="relative">
+                <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
+                <Input
+                  type="text"
+                  placeholder="Suche nach Code, Stadt oder Bundesland..."
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  className="pl-12 pr-4 py-4 h-auto rounded-3xl bg-transparent border-0 focus-visible:ring-2 focus-visible:ring-primary/20 transition-all duration-300"
+                />
+              </div>
             </div>
+          </div>
+          <div className="shrink-0">
+            <MobileUserMenu />
           </div>
         </div>
       )}
@@ -386,11 +392,6 @@ export default function Search() {
           </div>
         )}
 
-        {isMobile && !query && (
-          <div className="mb-4">
-            <h1 className="text-2xl font-bold">Kennzeichen suchen</h1>
-          </div>
-        )}
 
         {query && (
           <div className={`mb-4 flex items-center ${isMobile ? 'justify-between' : 'justify-between'} gap-4 flex-wrap`}>

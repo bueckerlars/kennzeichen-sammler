@@ -4,6 +4,7 @@ import { statisticsApi, licensePlateApi, collectionApi } from '../services/api';
 import type { Statistics, LicensePlate, UserCollection, SearchResult } from '../types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { UserMenu } from '../components/UserMenu';
+import { MobileUserMenu } from '../components/MobileUserMenu';
 import { useNavigate } from 'react-router-dom';
 import { Search, List, Trophy, Plus, Trash2 } from 'lucide-react';
 import { Input } from '../components/ui/input';
@@ -197,40 +198,41 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen pb-20 md:pb-0">
       {isMobile && <div className="h-20" />}
-      {/* Floating Search Bar on Mobile */}
+      {/* Floating Search Bar and Avatar on Mobile */}
       {isMobile && (
-        <div className="fixed top-4 left-4 right-4 z-50 md:hidden">
-          <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-            <PopoverAnchor asChild>
-              <div className="relative w-full glass-strong rounded-3xl shadow-2xl transition-all duration-300 has-[:focus]:scale-[1.02] has-[:focus]:shadow-2xl">
-                <div className="relative">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none z-10" />
-                  <Input
-                    ref={inputRef}
-                    type="text"
-                    placeholder="Suche nach Code, Stadt oder Bundesland..."
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      if (!popoverOpen) {
-                        setPopoverOpen(true);
-                      }
-                    }}
-                    onFocus={() => {
-                      if (searchQuery.length > 0 || searchResults.length > 0) {
-                        setPopoverOpen(true);
-                      }
-                    }}
-                    onClick={() => {
-                      if (searchQuery.length > 0 || searchResults.length > 0) {
-                        setPopoverOpen(true);
-                      }
-                    }}
-                    className="pl-12 pr-4 py-4 h-auto w-full rounded-3xl bg-transparent border-0 focus-visible:ring-2 focus-visible:ring-primary/30 transition-all duration-300"
-                  />
+        <div className="fixed top-4 left-4 right-4 z-50 md:hidden flex items-center gap-3">
+          <div className="flex-1">
+            <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+              <PopoverAnchor asChild>
+                <div className="relative w-full glass-strong rounded-3xl shadow-2xl transition-all duration-300 has-[:focus]:scale-[1.02] has-[:focus]:shadow-2xl">
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none z-10" />
+                    <Input
+                      ref={inputRef}
+                      type="text"
+                      placeholder="Suche nach Code, Stadt oder Bundesland..."
+                      value={searchQuery}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        if (!popoverOpen) {
+                          setPopoverOpen(true);
+                        }
+                      }}
+                      onFocus={() => {
+                        if (searchQuery.length > 0 || searchResults.length > 0) {
+                          setPopoverOpen(true);
+                        }
+                      }}
+                      onClick={() => {
+                        if (searchQuery.length > 0 || searchResults.length > 0) {
+                          setPopoverOpen(true);
+                        }
+                      }}
+                      className="pl-12 pr-4 py-4 h-auto w-full rounded-3xl bg-transparent border-0 focus-visible:ring-2 focus-visible:ring-primary/30 transition-all duration-300"
+                    />
+                  </div>
                 </div>
-              </div>
-            </PopoverAnchor>
+              </PopoverAnchor>
             <PopoverContent className="w-[calc(100vw-2rem)] p-0 glass-strong rounded-3xl shadow-2xl border-0 mt-3" align="start" onOpenAutoFocus={(e) => e.preventDefault()}>
               <div className="max-h-[60vh] overflow-y-auto">
                 {searchQuery.length > 0 && searchResults.length === 0 && !searchLoading && (
@@ -319,18 +321,20 @@ export default function Dashboard() {
               </div>
             </PopoverContent>
           </Popover>
+          </div>
+          <div className="shrink-0">
+            <MobileUserMenu />
+          </div>
         </div>
       )}
 
       <div className="container mx-auto px-2 md:px-4 py-4 md:py-8">
-        <div className={`flex justify-between items-center ${isMobile ? 'mb-4' : 'mb-8'}`}>
-          <div>
-            <h1 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold`}>Dashboard</h1>
-            {!isMobile && (
+        {!isMobile && (
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-3xl font-bold">Dashboard</h1>
               <p className="text-muted-foreground">Willkommen, {user?.username}</p>
-            )}
-          </div>
-          {!isMobile && (
+            </div>
             <div className="flex items-center gap-4">
               <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
                 <PopoverAnchor asChild>
@@ -462,8 +466,8 @@ export default function Dashboard() {
             </Popover>
             <UserMenu />
           </div>
-          )}
         </div>
+        )}
 
         {statistics && (
           <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mb-6 md:mb-8">

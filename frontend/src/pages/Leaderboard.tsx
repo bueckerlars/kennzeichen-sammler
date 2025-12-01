@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { ArrowLeft, Trophy } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useIsMobile } from '../hooks/use-mobile';
+import { MobileUserMenu } from '../components/MobileUserMenu';
 
 export default function Leaderboard() {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ export default function Leaderboard() {
 
   return (
     <div className="min-h-screen pb-20 md:pb-0">
-      <div className="container mx-auto px-2 md:px-4 py-4 md:py-8">
+      <div className={`${isMobile ? 'px-2 py-4' : 'container mx-auto px-4 py-8'}`}>
         {!isMobile && (
           <Button
             variant="ghost"
@@ -52,14 +53,21 @@ export default function Leaderboard() {
           </Button>
         )}
 
-        <Card className={`${isMobile ? 'mb-4' : 'mb-6'}`}>
+        <Card className={`${isMobile ? 'mb-4' : 'mb-6'} w-full`}>
           <CardHeader>
-            <CardTitle className={`flex items-center gap-2 ${isMobile ? 'text-xl' : ''}`}>
-              <Trophy className="h-5 w-5" />
-              Bestenliste
-            </CardTitle>
+            <div className="flex items-center justify-between gap-3">
+              <CardTitle className={`flex items-center gap-2 ${isMobile ? 'text-xl' : 'text-2xl'}`}>
+                <Trophy className={`${isMobile ? 'h-5 w-5' : 'h-6 w-6'}`} />
+                Bestenliste
+              </CardTitle>
+              {isMobile && (
+                <div className="shrink-0">
+                  <MobileUserMenu />
+                </div>
+              )}
+            </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className={isMobile ? 'p-3' : ''}>
             {leaderboard.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 Noch keine Einträge in der Bestenliste

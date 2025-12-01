@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import { Moon, Sun, LogOut } from 'lucide-react';
+import { Moon, Sun, Monitor, LogOut } from 'lucide-react';
 
 export function UserMenu() {
   const { user, logout } = useAuth();
@@ -37,18 +37,20 @@ export function UserMenu() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
-          {theme === 'light' ? (
-            <>
-              <Moon className="mr-2 h-4 w-4" />
-              <span>Dark Mode</span>
-            </>
-          ) : (
-            <>
-              <Sun className="mr-2 h-4 w-4" />
-              <span>Light Mode</span>
-            </>
-          )}
+        <DropdownMenuItem onClick={() => setTheme('light')}>
+          <Sun className="mr-2 h-4 w-4" />
+          <span>Light</span>
+          {theme === 'light' && <span className="ml-auto">✓</span>}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme('dark')}>
+          <Moon className="mr-2 h-4 w-4" />
+          <span>Dark</span>
+          {theme === 'dark' && <span className="ml-auto">✓</span>}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme('system')}>
+          <Monitor className="mr-2 h-4 w-4" />
+          <span>System</span>
+          {theme === 'system' && <span className="ml-auto">✓</span>}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive">
