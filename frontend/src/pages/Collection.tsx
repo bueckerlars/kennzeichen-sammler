@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { collectionApi } from '../services/api';
 import type { UserCollection } from '../types';
 import { Button } from '../components/ui/button';
@@ -7,22 +7,36 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { ArrowLeft, Trash2 } from 'lucide-react';
 import { useIsMobile } from '../hooks/use-mobile';
 import { MobileUserMenu } from '../components/MobileUserMenu';
+import { useAuth } from '../context/AuthContext';
 
 export default function Collection() {
   const navigate = useNavigate();
+  const { userId } = useParams<{ userId?: string }>();
+  const [searchParams] = useSearchParams();
   const isMobile = useIsMobile();
+  const { user } = useAuth();
   const [collections, setCollections] = useState<UserCollection[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [viewedUsername, setViewedUsername] = useState<string | null>(null);
+  const isViewingOtherUser = userId && userId !== user?.id;
+  const fromLeaderboard = searchParams.get('from') === 'leaderboard';
 
   useEffect(() => {
     loadCollection();
-  }, []);
+  }, [userId]);
 
   const loadCollection = async () => {
     try {
-      const data = await collectionApi.getUserCollection();
-      setCollections(data);
+      if (userId && userId !== user?.id) {
+        const data = await collectionApi.getUserCollectionByUserId(userId);
+        setCollections(data.collections);
+        setViewedUsername(data.username);
+      } else {
+        const data = await collectionApi.getUserCollection();
+        setCollections(data);
+        setViewedUsername(null);
+      }
     } catch (error) {
       console.error('Failed to load collection', error);
     } finally {
@@ -61,11 +75,11 @@ export default function Collection() {
         {!isMobile && (
           <Button
             variant="ghost"
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate(fromLeaderboard ? '/leaderboard' : '/dashboard')}
             className="mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Zurück zum Dashboard
+            {fromLeaderboard ? 'Zurück zur Bestenliste' : 'Zurück zum Dashboard'}
           </Button>
         )}
 
@@ -73,7 +87,7 @@ export default function Collection() {
           <CardHeader>
             <div className="flex items-center justify-between gap-3">
               <CardTitle className={`flex items-center gap-2 ${isMobile ? 'text-xl' : 'text-2xl'}`}>
-                Meine Sammlung
+                {isViewingOtherUser ? `Sammlung von ${viewedUsername || '...'}` : 'Meine Sammlung'}
               </CardTitle>
               {isMobile && (
                 <div className="shrink-0">
@@ -85,7 +99,9 @@ export default function Collection() {
           <CardContent className={isMobile ? 'p-3' : ''}>
             {collections.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
-                Deine Sammlung ist noch leer. Beginne mit der Suche!
+                {isViewingOtherUser 
+                  ? `Die Sammlung von ${viewedUsername || 'diesem Nutzer'} ist noch leer.`
+                  : 'Deine Sammlung ist noch leer. Beginne mit der Suche!'}
               </div>
             ) : isMobile ? (
           <div className="space-y-3">
@@ -113,17 +129,19 @@ export default function Collection() {
                       })}
                     </div>
                   </div>
-                  <div className="shrink-0">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleRemove(collection.id)}
-                      disabled={deleting === collection.id}
-                      className="min-h-[44px] min-w-[44px] touch-manipulation text-destructive hover:text-destructive hover:bg-destructive/10"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  {!isViewingOtherUser && (
+                    <div className="shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleRemove(collection.id)}
+                        disabled={deleting === collection.id}
+                        className="min-h-[44px] min-w-[44px] touch-manipulation text-destructive hover:text-destructive hover:bg-destructive/10"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -137,15 +155,17 @@ export default function Collection() {
                     <CardTitle className="text-2xl">
                       {collection.licensePlate?.code}
                     </CardTitle>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleRemove(collection.id)}
-                      disabled={deleting === collection.id}
-                      className="min-h-[44px] min-w-[44px] touch-manipulation"
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
+                    {!isViewingOtherUser && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleRemove(collection.id)}
+                        disabled={deleting === collection.id}
+                        className="min-h-[44px] min-w-[44px] touch-manipulation"
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    )}
                   </div>
                 </CardHeader>
                 <CardContent>

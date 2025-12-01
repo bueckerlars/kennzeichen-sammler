@@ -59,6 +59,14 @@ function AppRoutes() {
         }
       />
       <Route
+        path="/collection/:userId"
+        element={
+          <ProtectedRoute>
+            <Collection />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/leaderboard"
         element={
           <ProtectedRoute>

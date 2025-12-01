@@ -75,6 +75,11 @@ export const collectionApi = {
     return response.data;
   },
 
+  getUserCollectionByUserId: async (userId: string): Promise<{ collections: UserCollection[]; username: string }> => {
+    const response = await api.get(`/collection/user/${userId}`);
+    return response.data;
+  },
+
   addToCollection: async (
     licensePlateId: string,
     spottedDate?: string

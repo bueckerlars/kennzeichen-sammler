@@ -1,6 +1,8 @@
 import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth';
 import { CollectionService } from '../services/collectionService';
+import { AppDataSource } from '../config/database';
+import { User } from '../models/User';
 
 const collectionService = new CollectionService();
 
@@ -11,6 +13,24 @@ export class CollectionController {
         req.userId!
       );
       res.json(collections);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch collection' });
+    }
+  }
+
+  async getUserCollectionByUserId(req: AuthRequest, res: Response) {
+    try {
+      const { userId } = req.params;
+      const userRepository = AppDataSource.getRepository(User);
+      
+      // Check if user exists
+      const user = await userRepository.findOne({ where: { id: userId } });
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const collections = await collectionService.getUserCollection(userId);
+      res.json({ collections, username: user.username });
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch collection' });
     }

@@ -11,6 +11,10 @@ router.get(
   '/',
   collectionController.getUserCollection.bind(collectionController)
 );
+router.get(
+  '/user/:userId',
+  collectionController.getUserCollectionByUserId.bind(collectionController)
+);
 router.post(
   '/',
   collectionController.addToCollection.bind(collectionController)

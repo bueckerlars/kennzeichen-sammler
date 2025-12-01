@@ -4,7 +4,8 @@ import { statisticsApi } from '../services/api';
 import type { LeaderboardEntry } from '../types';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { ArrowLeft, Trophy } from 'lucide-react';
+import { Input } from '../components/ui/input';
+import { ArrowLeft, Trophy, Search, Eye, ChevronRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useIsMobile } from '../hooks/use-mobile';
 import { MobileUserMenu } from '../components/MobileUserMenu';
@@ -14,13 +15,16 @@ export default function Leaderboard() {
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [filteredLeaderboard, setFilteredLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const loadLeaderboard = async () => {
       try {
         const data = await statisticsApi.getLeaderboard();
         setLeaderboard(data);
+        setFilteredLeaderboard(data);
       } catch (error) {
         console.error('Failed to load leaderboard', error);
       } finally {
@@ -30,6 +34,22 @@ export default function Leaderboard() {
 
     loadLeaderboard();
   }, []);
+
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredLeaderboard(leaderboard);
+    } else {
+      const query = searchQuery.toLowerCase().trim();
+      const filtered = leaderboard.filter((entry) =>
+        entry.username.toLowerCase().includes(query)
+      );
+      setFilteredLeaderboard(filtered);
+    }
+  }, [searchQuery, leaderboard]);
+
+  const handleUserClick = (userId: string) => {
+    navigate(`/collection/${userId}?from=leaderboard`);
+  };
 
   if (loading) {
     return (
@@ -68,49 +88,89 @@ export default function Leaderboard() {
             </div>
           </CardHeader>
           <CardContent className={isMobile ? 'p-3' : ''}>
+            <div className="mb-4 space-y-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Nach Username suchen..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground px-1">
+                Tippe auf einen Eintrag oder den Button, um die Sammlung anzusehen
+              </p>
+            </div>
             {leaderboard.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 Noch keine Einträge in der Bestenliste
               </div>
+            ) : filteredLeaderboard.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                Keine Ergebnisse gefunden
+              </div>
             ) : (
               <div className={`space-y-2 ${isMobile ? 'space-y-3' : ''}`}>
-                {leaderboard.map((entry, index) => (
-                  <div
-                    key={entry.userId}
-                    className={`flex items-center justify-between ${isMobile ? 'p-3 min-h-[60px]' : 'p-4'} rounded-2xl border touch-manipulation transition-colors duration-300 ${
-                      entry.userId === user?.id
-                        ? 'bg-primary/10 border-primary shadow-md'
-                        : 'bg-card/80 backdrop-blur-sm'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3 md:gap-4">
-                      <div className={`${isMobile ? 'text-xl w-6' : 'text-2xl w-8'} font-bold text-center`}>
-                        {index + 1}
+                {filteredLeaderboard.map((entry, index) => {
+                  const originalIndex = leaderboard.findIndex(e => e.userId === entry.userId);
+                  return (
+                    <div
+                      key={entry.userId}
+                      onClick={() => handleUserClick(entry.userId)}
+                      className={`relative flex items-center justify-between ${isMobile ? 'p-3 min-h-[60px]' : 'p-4'} rounded-2xl border touch-manipulation transition-all duration-300 cursor-pointer hover:bg-primary/5 group ${
+                        entry.userId === user?.id
+                          ? 'bg-primary/10 border-primary shadow-md'
+                          : 'bg-card/80 backdrop-blur-sm hover:border-primary/50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
+                        <div className={`${isMobile ? 'text-xl w-6' : 'text-2xl w-8'} font-bold text-center shrink-0`}>
+                          {originalIndex + 1}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className={`${isMobile ? 'text-sm' : ''} font-semibold`}>
+                            {entry.username}
+                            {entry.userId === user?.id && (
+                              <span className={`ml-2 ${isMobile ? 'text-xs' : 'text-sm'} text-primary`}>
+                                (Du)
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <div className={`${isMobile ? 'text-sm' : ''} font-semibold`}>
-                          {entry.username}
-                          {entry.userId === user?.id && (
-                            <span className={`ml-2 ${isMobile ? 'text-xs' : 'text-sm'} text-primary`}>
-                              (Du)
+                      <div className="flex items-center gap-2 md:gap-3 shrink-0 group-hover:opacity-0 transition-opacity duration-300">
+                        <div className="flex items-center gap-2">
+                          {originalIndex === 0 && (
+                            <Trophy className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'} text-yellow-500 shrink-0`} />
+                          )}
+                          <span className={`${isMobile ? 'text-lg' : 'text-xl'} font-bold`}>{entry.count}</span>
+                          {!isMobile && (
+                            <span className="text-muted-foreground text-sm">
+                              Kennzeichen
                             </span>
                           )}
                         </div>
                       </div>
+                      <Button
+                        variant="ghost"
+                        size={isMobile ? "sm" : "default"}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleUserClick(entry.userId);
+                        }}
+                        className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${isMobile ? 'h-10 px-3' : ''} shrink-0 pointer-events-none group-hover:pointer-events-auto`}
+                        aria-label={`Sammlung von ${entry.username} ansehen`}
+                      >
+                        <Eye className={`${isMobile ? 'h-4 w-4' : 'h-4 w-4 mr-2'}`} />
+                        {!isMobile && (
+                          <span className="text-sm">Ansehen</span>
+                        )}
+                      </Button>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {index === 0 && (
-                        <Trophy className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'} text-yellow-500`} />
-                      )}
-                      <span className={`${isMobile ? 'text-lg' : 'text-xl'} font-bold`}>{entry.count}</span>
-                      {!isMobile && (
-                        <span className="text-muted-foreground">
-                          Kennzeichen
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </CardContent>
