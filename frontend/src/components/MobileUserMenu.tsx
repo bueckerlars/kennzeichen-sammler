@@ -1,5 +1,8 @@
+import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { useOnboarding } from '../context/OnboardingContext';
+import { useUserMenu } from '../context/UserMenuContext';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import {
   Sheet,
@@ -10,21 +13,28 @@ import {
   SheetClose,
 } from './ui/sheet';
 import { Button } from './ui/button';
-import { Moon, Sun, Monitor, LogOut, X } from 'lucide-react';
+import { Moon, Sun, Monitor, LogOut, X, BookOpen } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 export function MobileUserMenu() {
   const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
+  const { startOnboarding, isActive } = useOnboarding();
+  const { mobileSheetOpen, setMobileSheetOpen } = useUserMenu();
 
   const getInitials = (username: string) => {
     return username.charAt(0).toUpperCase();
   };
 
+  const handleStartOnboarding = () => {
+    startOnboarding();
+    setMobileSheetOpen(false);
+  };
+
   return (
-    <Sheet>
+    <Sheet open={mobileSheetOpen} onOpenChange={setMobileSheetOpen}>
       <SheetTrigger asChild>
-        <button className="focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-full">
+        <button className="focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-full" data-onboarding="user-menu">
           <Avatar className="cursor-pointer hover:opacity-80 transition-opacity h-10 w-10 glass-strong border border-white/20 shadow-lg">
             <AvatarFallback className="bg-primary text-primary-foreground">
               {user?.username ? getInitials(user.username) : 'U'}
@@ -35,6 +45,7 @@ export function MobileUserMenu() {
       <SheetContent 
         side="right" 
         hideCloseButton
+        data-onboarding="user-menu-sheet"
         className={cn(
           "w-[280px] sm:w-[320px] p-0 flex flex-col",
           "glass-fixed border-l-0 rounded-l-3xl"
@@ -102,6 +113,16 @@ export function MobileUserMenu() {
         </div>
 
         <div className="mt-auto px-6 pb-6 pt-4 border-t border-border/50 space-y-3">
+          {!isActive && (
+            <Button
+              variant="outline"
+              className="w-full justify-start min-h-[44px] font-medium bg-background/60 backdrop-blur-sm border-2 border-border text-foreground hover:bg-background/80 hover:border-primary/50"
+              onClick={handleStartOnboarding}
+            >
+              <BookOpen className="mr-3 h-4 w-4" />
+              <span>Onboarding starten</span>
+            </Button>
+          )}
           <div className="text-center">
             <p className="text-xs text-muted-foreground">
               Version {import.meta.env.VITE_APP_VERSION || '1.0.0'}

@@ -203,8 +203,8 @@ export default function Dashboard() {
         <div className="fixed top-4 left-4 right-4 z-50 md:hidden flex items-center gap-3">
           <div className="flex-1">
             <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-              <PopoverAnchor asChild>
-                <div className="relative w-full glass-strong rounded-3xl shadow-2xl transition-all duration-300 has-[:focus]:scale-[1.02] has-[:focus]:shadow-2xl">
+            <PopoverAnchor asChild>
+              <div className="relative w-full glass-strong rounded-3xl shadow-2xl transition-all duration-300 has-[:focus]:scale-[1.02] has-[:focus]:shadow-2xl" data-onboarding="search">
                   <div className="relative">
                     <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none z-10" />
                     <Input
@@ -337,8 +337,8 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center gap-4">
               <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-                <PopoverAnchor asChild>
-                  <div className="relative w-[500px] glass-light rounded-2xl shadow-md transition-all duration-300 has-[:focus]:scale-[1.01] has-[:focus]:shadow-lg has-[:focus]:ring-2 has-[:focus]:ring-primary/20">
+              <PopoverAnchor asChild>
+                <div className="relative w-[500px] glass-light rounded-2xl shadow-md transition-all duration-300 has-[:focus]:scale-[1.01] has-[:focus]:shadow-lg has-[:focus]:ring-2 has-[:focus]:ring-primary/20" data-onboarding="search">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
                     <Input
                       ref={inputRef}
@@ -470,7 +470,7 @@ export default function Dashboard() {
         )}
 
         {statistics && (
-          <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mb-6 md:mb-8">
+          <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mb-6 md:mb-8" data-onboarding="statistics">
             <Card>
               {isMobile ? (
                 <CardContent className="p-5">
@@ -595,7 +595,7 @@ export default function Dashboard() {
 
         {!isMobile && (
           <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 mb-6 md:mb-8">
-            <Card className="cursor-pointer min-h-[44px] touch-manipulation" onClick={() => navigate('/collection')}>
+            <Card className="cursor-pointer min-h-[44px] touch-manipulation" onClick={() => navigate('/collection')} data-onboarding="collection">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <List className="h-5 w-5" />
@@ -607,7 +607,7 @@ export default function Dashboard() {
               </CardHeader>
             </Card>
 
-            <Card className="cursor-pointer min-h-[44px] touch-manipulation" onClick={() => navigate('/leaderboard')}>
+            <Card className="cursor-pointer min-h-[44px] touch-manipulation" onClick={() => navigate('/leaderboard')} data-onboarding="leaderboard">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Trophy className="h-5 w-5" />

@@ -69,7 +69,7 @@ export default function Collection() {
           </Button>
         )}
 
-        <Card className={`${isMobile ? 'mb-4' : 'mb-6'} w-full`}>
+        <Card className={`${isMobile ? 'mb-4' : 'mb-6'} w-full`} data-onboarding="collection">
           <CardHeader>
             <div className="flex items-center justify-between gap-3">
               <CardTitle className={`flex items-center gap-2 ${isMobile ? 'text-xl' : 'text-2xl'}`}>

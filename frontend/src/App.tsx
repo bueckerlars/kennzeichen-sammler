@@ -1,6 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { OnboardingProvider } from './context/OnboardingContext';
+import { UserMenuProvider } from './context/UserMenuContext';
+import { Onboarding } from './components/Onboarding';
 import { Toaster } from './components/ui/toaster';
 import { MobileNavigation } from './components/MobileNavigation';
 import Login from './pages/Login';
@@ -73,9 +76,14 @@ function App() {
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <AppRoutes />
-          <MobileNavigation />
-          <Toaster />
+          <UserMenuProvider>
+            <OnboardingProvider>
+              <AppRoutes />
+              <MobileNavigation />
+              <Onboarding />
+              <Toaster />
+            </OnboardingProvider>
+          </UserMenuProvider>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
