@@ -39,7 +39,7 @@ export default function Leaderboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20 md:pb-0">
+    <div className="min-h-screen pb-20 md:pb-0">
       <div className="container mx-auto px-2 md:px-4 py-4 md:py-8">
         {!isMobile && (
           <Button
@@ -52,7 +52,7 @@ export default function Leaderboard() {
           </Button>
         )}
 
-        <Card className={`${isMobile ? 'mb-4' : 'mb-6'} hover:shadow-xl transition-all duration-300`}>
+        <Card className={`${isMobile ? 'mb-4' : 'mb-6'}`}>
           <CardHeader>
             <CardTitle className={`flex items-center gap-2 ${isMobile ? 'text-xl' : ''}`}>
               <Trophy className="h-5 w-5" />
@@ -69,7 +69,7 @@ export default function Leaderboard() {
                 {leaderboard.map((entry, index) => (
                   <div
                     key={entry.userId}
-                    className={`flex items-center justify-between ${isMobile ? 'p-3 min-h-[60px]' : 'p-4'} rounded-2xl border touch-manipulation transition-all duration-300 hover:shadow-lg hover:scale-[1.01] ${
+                    className={`flex items-center justify-between ${isMobile ? 'p-3 min-h-[60px]' : 'p-4'} rounded-2xl border touch-manipulation transition-colors duration-300 ${
                       entry.userId === user?.id
                         ? 'bg-primary/10 border-primary shadow-md'
                         : 'bg-card/80 backdrop-blur-sm'

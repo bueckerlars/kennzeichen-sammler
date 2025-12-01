@@ -89,11 +89,75 @@ export default {
   				to: {
   					height: 0
   				}
+  			},
+  			'glass-pulse': {
+  				'0%, 100%': {
+  					opacity: '1',
+  					transform: 'scale(1)'
+  				},
+  				'50%': {
+  					opacity: '0.95',
+  					transform: 'scale(1.02)'
+  				}
+  			},
+  			'glass-glow': {
+  				'0%, 100%': {
+  					boxShadow: 'var(--shadow-glass-medium)'
+  				},
+  				'50%': {
+  					boxShadow: 'var(--shadow-glass-glow), var(--shadow-glass-medium)'
+  				}
+  			},
+  			'liquid-transition': {
+  				'0%': {
+  					transform: 'scale(0.95) translateY(10px)',
+  					opacity: '0'
+  				},
+  				'60%': {
+  					transform: 'scale(1.02) translateY(-2px)'
+  				},
+  				'100%': {
+  					transform: 'scale(1) translateY(0)',
+  					opacity: '1'
+  				}
+  			},
+  			'float': {
+  				'0%, 100%': {
+  					transform: 'translateY(0px)'
+  				},
+  				'50%': {
+  					transform: 'translateY(-6px)'
+  				}
+  			},
+  			'elastic-scale': {
+  				'0%': {
+  					transform: 'scale(1)'
+  				},
+  				'50%': {
+  					transform: 'scale(0.95)'
+  				},
+  				'100%': {
+  					transform: 'scale(1)'
+  				}
   			}
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
+  			'accordion-up': 'accordion-up 0.2s ease-out',
+  			'glass-pulse': 'glass-pulse 3s ease-in-out infinite',
+  			'glass-glow': 'glass-glow 2s ease-in-out infinite',
+  			'liquid-transition': 'liquid-transition 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+  			'float': 'float 3s ease-in-out infinite',
+  			'elastic-scale': 'elastic-scale 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)'
+  		},
+  		backdropBlur: {
+  			xs: '4px',
+  			sm: '8px',
+  			md: '12px',
+  			lg: '16px',
+  			xl: '20px',
+  			'2xl': '24px',
+  			'3xl': '32px'
   		}
   	}
   },

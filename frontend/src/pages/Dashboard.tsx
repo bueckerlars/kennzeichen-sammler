@@ -195,14 +195,14 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20 md:pb-0">
+    <div className="min-h-screen pb-20 md:pb-0">
       {isMobile && <div className="h-20" />}
       {/* Floating Search Bar on Mobile */}
       {isMobile && (
         <div className="fixed top-4 left-4 right-4 z-50 md:hidden">
           <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
             <PopoverAnchor asChild>
-              <div className="relative w-full glass rounded-3xl shadow-xl">
+              <div className="relative w-full glass-strong rounded-3xl shadow-2xl transition-all duration-300 has-[:focus]:scale-[1.02] has-[:focus]:shadow-2xl">
                 <div className="relative">
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none z-10" />
                   <Input
@@ -226,12 +226,12 @@ export default function Dashboard() {
                         setPopoverOpen(true);
                       }
                     }}
-                    className="pl-12 pr-4 py-4 h-auto w-full rounded-3xl bg-transparent border-0 focus-visible:ring-2 focus-visible:ring-primary/20 transition-all duration-300"
+                    className="pl-12 pr-4 py-4 h-auto w-full rounded-3xl bg-transparent border-0 focus-visible:ring-2 focus-visible:ring-primary/30 transition-all duration-300"
                   />
                 </div>
               </div>
             </PopoverAnchor>
-            <PopoverContent className="w-[calc(100vw-2rem)] p-0 glass rounded-2xl shadow-xl border-0 mt-3" align="start" onOpenAutoFocus={(e) => e.preventDefault()}>
+            <PopoverContent className="w-[calc(100vw-2rem)] p-0 glass-strong rounded-3xl shadow-2xl border-0 mt-3" align="start" onOpenAutoFocus={(e) => e.preventDefault()}>
               <div className="max-h-[60vh] overflow-y-auto">
                 {searchQuery.length > 0 && searchResults.length === 0 && !searchLoading && (
                   <div className="p-4 text-center text-muted-foreground">
@@ -334,8 +334,8 @@ export default function Dashboard() {
             <div className="flex items-center gap-4">
               <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
                 <PopoverAnchor asChild>
-                  <div className="relative w-[500px]">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <div className="relative w-[500px] glass-light rounded-2xl shadow-md transition-all duration-300 has-[:focus]:scale-[1.01] has-[:focus]:shadow-lg has-[:focus]:ring-2 has-[:focus]:ring-primary/20">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
                     <Input
                       ref={inputRef}
                       type="text"
@@ -365,11 +365,11 @@ export default function Dashboard() {
                           inputRef.current?.select();
                         }
                       }}
-                      className="pl-10 w-full"
+                      className="pl-10 w-full bg-transparent"
                     />
                   </div>
                 </PopoverAnchor>
-                <PopoverContent className="w-[500px] p-0 glass rounded-2xl shadow-xl border-0" align="end" onOpenAutoFocus={(e) => e.preventDefault()}>
+                <PopoverContent className="w-[500px] p-0 glass-strong rounded-3xl shadow-2xl border-0" align="end" onOpenAutoFocus={(e) => e.preventDefault()}>
                 <div className="max-h-[600px] overflow-y-auto">
                   {searchQuery.length > 0 && searchResults.length === 0 && !searchLoading && (
                     <div className="p-4 text-center text-muted-foreground">
@@ -467,79 +467,79 @@ export default function Dashboard() {
 
         {statistics && (
           <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mb-6 md:mb-8">
-            <Card className="hover:shadow-xl transition-all duration-300">
+            <Card>
               {isMobile ? (
-                <CardContent className="p-4">
+                <CardContent className="p-5">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-sm font-medium">Gesamt</div>
+                      <div className="text-sm font-semibold mb-1">Gesamt</div>
                       <div className="text-xs text-muted-foreground">Alle deutschen Kennzeichen</div>
                     </div>
-                    <div className="text-2xl font-bold">{statistics.total}</div>
+                    <div className="text-3xl font-bold">{statistics.total}</div>
                   </div>
                 </CardContent>
               ) : (
                 <>
-                  <CardHeader>
-                    <CardTitle>Gesamt</CardTitle>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg">Gesamt</CardTitle>
                     <CardDescription>Alle deutschen Kennzeichen</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold">{statistics.total}</div>
+                    <div className="text-4xl font-bold">{statistics.total}</div>
                   </CardContent>
                 </>
               )}
             </Card>
 
-            <Card className="hover:shadow-xl transition-all duration-300">
+            <Card>
               {isMobile ? (
-                <CardContent className="p-4">
+                <CardContent className="p-5">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-sm font-medium">Gesammelt</div>
+                      <div className="text-sm font-semibold mb-1">Gesammelt</div>
                       <div className="text-xs text-muted-foreground">Deine Sammlung</div>
                     </div>
-                    <div className="text-2xl font-bold text-green-600">
-                      {statistics.collected}
-                    </div>
-                  </div>
-                </CardContent>
-              ) : (
-                <>
-                  <CardHeader>
-                    <CardTitle>Gesammelt</CardTitle>
-                    <CardDescription>Deine Sammlung</CardDescription>
-                  </CardHeader>
-                  <CardContent>
                     <div className="text-3xl font-bold text-green-600">
                       {statistics.collected}
                     </div>
+                  </div>
+                </CardContent>
+              ) : (
+                <>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg">Gesammelt</CardTitle>
+                    <CardDescription>Deine Sammlung</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-4xl font-bold text-green-600">
+                      {statistics.collected}
+                    </div>
                   </CardContent>
                 </>
               )}
             </Card>
 
-            <Card className="hover:shadow-xl transition-all duration-300">
+            <Card>
               {isMobile ? (
-                <CardContent className="p-4">
+                <CardContent className="p-5">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-sm font-medium">Fehlend</div>
+                      <div className="text-sm font-semibold mb-1">Fehlend</div>
                       <div className="text-xs text-muted-foreground">Noch zu sammeln</div>
                     </div>
-                    <div className="text-2xl font-bold text-orange-600">
+                    <div className="text-3xl font-bold text-orange-600">
                       {statistics.missing}
                     </div>
                   </div>
                 </CardContent>
               ) : (
                 <>
-                  <CardHeader>
-                    <CardTitle>Fehlend</CardTitle>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg">Fehlend</CardTitle>
                     <CardDescription>Noch zu sammeln</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold text-orange-600">
+                    <div className="text-4xl font-bold text-orange-600">
                       {statistics.missing}
                     </div>
                   </CardContent>
@@ -547,38 +547,38 @@ export default function Dashboard() {
               )}
             </Card>
 
-            <Card className="hover:shadow-xl transition-all duration-300">
+            <Card>
               {isMobile ? (
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-2">
+                <CardContent className="p-5">
+                  <div className="flex items-center justify-between mb-3">
                     <div>
-                      <div className="text-sm font-medium">Fortschritt</div>
+                      <div className="text-sm font-semibold mb-1">Fortschritt</div>
                       <div className="text-xs text-muted-foreground">Prozentual</div>
                     </div>
-                    <div className="text-2xl font-bold">
+                    <div className="text-3xl font-bold">
                       {statistics.percentage.toFixed(1)}%
                     </div>
                   </div>
-                  <div className="w-full bg-muted rounded-full h-1.5">
+                  <div className="w-full bg-muted/50 rounded-full h-2 backdrop-blur-sm">
                     <div
-                      className="bg-primary h-1.5 rounded-full"
+                      className="bg-gradient-to-r from-primary to-primary/80 h-2 rounded-full transition-all duration-500"
                       style={{ width: `${statistics.percentage}%` }}
                     />
                   </div>
                 </CardContent>
               ) : (
                 <>
-                  <CardHeader>
-                    <CardTitle>Fortschritt</CardTitle>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg">Fortschritt</CardTitle>
                     <CardDescription>Prozentual</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold">
+                    <div className="text-4xl font-bold mb-3">
                       {statistics.percentage.toFixed(1)}%
                     </div>
-                    <div className="mt-2 w-full bg-muted rounded-full h-2">
+                    <div className="w-full bg-muted/50 rounded-full h-2.5 backdrop-blur-sm">
                       <div
-                        className="bg-primary h-2 rounded-full"
+                        className="bg-gradient-to-r from-primary to-primary/80 h-2.5 rounded-full transition-all duration-500"
                         style={{ width: `${statistics.percentage}%` }}
                       />
                     </div>
@@ -591,7 +591,7 @@ export default function Dashboard() {
 
         {!isMobile && (
           <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 mb-6 md:mb-8">
-            <Card className="cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all duration-300 min-h-[44px] touch-manipulation" onClick={() => navigate('/collection')}>
+            <Card className="cursor-pointer min-h-[44px] touch-manipulation" onClick={() => navigate('/collection')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <List className="h-5 w-5" />
@@ -603,7 +603,7 @@ export default function Dashboard() {
               </CardHeader>
             </Card>
 
-            <Card className="cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all duration-300 min-h-[44px] touch-manipulation" onClick={() => navigate('/leaderboard')}>
+            <Card className="cursor-pointer min-h-[44px] touch-manipulation" onClick={() => navigate('/leaderboard')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Trophy className="h-5 w-5" />
@@ -618,32 +618,35 @@ export default function Dashboard() {
         )}
 
         {statistics && statistics.byState.length > 0 && (
-          <Card className="hover:shadow-xl transition-all duration-300">
+          <Card>
             <CardHeader>
               <CardTitle>Statistiken nach Bundesland</CardTitle>
             </CardHeader>
             <CardContent>
               {isMobile ? (
-                <div className="space-y-2">
-                  {statistics.byState.map((state) => {
+                <div className="space-y-3">
+                  {statistics.byState.map((state, index) => {
                     const percentage = state.total > 0
                       ? ((state.collected / state.total) * 100).toFixed(1)
                       : '0';
                     return (
                       <div
                         key={state.state}
-                        className="flex items-center justify-between p-2 border-b last:border-0"
+                        className="glass-light rounded-2xl p-3 transition-colors duration-300"
+                        style={{ animationDelay: `${0.5 + index * 0.05}s` }}
                       >
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium truncate">{state.state}</div>
-                          <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
-                            <span>G: {state.total}</span>
-                            <span className="text-green-600">✓ {state.collected}</span>
-                            <span className="text-orange-600">✗ {state.missing}</span>
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-semibold truncate mb-1">{state.state}</div>
+                            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                              <span>G: {state.total}</span>
+                              <span className="text-green-600">✓ {state.collected}</span>
+                              <span className="text-orange-600">✗ {state.missing}</span>
+                            </div>
                           </div>
-                        </div>
-                        <div className="text-right ml-2">
-                          <div className="text-sm font-bold">{percentage}%</div>
+                          <div className="text-right ml-2">
+                            <div className="text-sm font-bold">{percentage}%</div>
+                          </div>
                         </div>
                       </div>
                     );
@@ -653,26 +656,30 @@ export default function Dashboard() {
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b">
-                        <th className="text-left p-2">Bundesland</th>
-                        <th className="text-right p-2">Gesamt</th>
-                        <th className="text-right p-2">Gesammelt</th>
-                        <th className="text-right p-2">Fehlend</th>
-                        <th className="text-right p-2">%</th>
+                      <tr className="border-b border-border/50">
+                        <th className="text-left p-3 font-semibold">Bundesland</th>
+                        <th className="text-right p-3 font-semibold">Gesamt</th>
+                        <th className="text-right p-3 font-semibold">Gesammelt</th>
+                        <th className="text-right p-3 font-semibold">Fehlend</th>
+                        <th className="text-right p-3 font-semibold">%</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {statistics.byState.map((state) => (
-                        <tr key={state.state} className="border-b">
-                          <td className="p-2">{state.state}</td>
-                          <td className="text-right p-2">{state.total}</td>
-                          <td className="text-right p-2 text-green-600">
+                      {statistics.byState.map((state, index) => (
+                        <tr 
+                          key={state.state} 
+                          className="border-b border-border/30 transition-colors duration-300"
+                          style={{ animationDelay: `${0.5 + index * 0.05}s` }}
+                        >
+                          <td className="p-3">{state.state}</td>
+                          <td className="text-right p-3">{state.total}</td>
+                          <td className="text-right p-3 text-green-600 font-semibold">
                             {state.collected}
                           </td>
-                          <td className="text-right p-2 text-orange-600">
+                          <td className="text-right p-3 text-orange-600 font-semibold">
                             {state.missing}
                           </td>
-                          <td className="text-right p-2">
+                          <td className="text-right p-3 font-semibold">
                             {state.total > 0
                               ? ((state.collected / state.total) * 100).toFixed(1)
                               : 0}
