@@ -53,7 +53,7 @@ export function MobileNavigation() {
 
   return (
     <nav 
-      className="fixed bottom-4 left-4 right-4 z-[100] glass-nav rounded-3xl shadow-2xl md:hidden"
+      className="fixed bottom-4 left-4 right-4 z-[100] glass-nav rounded-3xl md:hidden"
       style={{ 
         position: 'fixed',
         bottom: '1rem',

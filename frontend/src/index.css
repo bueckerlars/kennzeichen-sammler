@@ -28,22 +28,22 @@
     
     /* Glass system - Light theme */
     --glass-bg-light: 255, 255, 255;
-    --glass-bg-light-opacity: 0.2;
+    --glass-bg-light-opacity: 0.16;
     --glass-bg-medium: 255, 255, 255;
-    --glass-bg-medium-opacity: 0.25;
+    --glass-bg-medium-opacity: 0.2;
     --glass-bg-strong: 255, 255, 255;
-    --glass-bg-strong-opacity: 0.3;
+    --glass-bg-strong-opacity: 0.24;
     --glass-border-light: 255, 255, 255;
-    --glass-border-light-opacity: 0.2;
+    --glass-border-light-opacity: 0.16;
     --glass-border-medium: 255, 255, 255;
-    --glass-border-medium-opacity: 0.25;
+    --glass-border-medium-opacity: 0.2;
     --glass-border-strong: 255, 255, 255;
-    --glass-border-strong-opacity: 0.3;
+    --glass-border-strong-opacity: 0.24;
     
     /* Gradient overlays for depth */
-    --glass-gradient-light: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-    --glass-gradient-medium: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
-    --glass-gradient-strong: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+    --glass-gradient-light: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
+    --glass-gradient-medium: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
+    --glass-gradient-strong: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
     
     /* Enhanced shadows with color tints */
     --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.2);
@@ -94,22 +94,22 @@
     
     /* Glass system - Dark theme */
     --glass-bg-light: 20, 20, 30;
-    --glass-bg-light-opacity: 0.2;
+    --glass-bg-light-opacity: 0.16;
     --glass-bg-medium: 20, 20, 30;
-    --glass-bg-medium-opacity: 0.25;
+    --glass-bg-medium-opacity: 0.2;
     --glass-bg-strong: 20, 20, 30;
-    --glass-bg-strong-opacity: 0.3;
+    --glass-bg-strong-opacity: 0.24;
     --glass-border-light: 255, 255, 255;
-    --glass-border-light-opacity: 0.15;
+    --glass-border-light-opacity: 0.12;
     --glass-border-medium: 255, 255, 255;
-    --glass-border-medium-opacity: 0.2;
+    --glass-border-medium-opacity: 0.16;
     --glass-border-strong: 255, 255, 255;
-    --glass-border-strong-opacity: 0.25;
+    --glass-border-strong-opacity: 0.2;
     
     /* Gradient overlays for dark theme */
-    --glass-gradient-light: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-    --glass-gradient-medium: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
-    --glass-gradient-strong: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    --glass-gradient-light: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.015) 100%);
+    --glass-gradient-medium: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.03) 100%);
+    --glass-gradient-strong: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
     
     /* Enhanced shadows for dark theme */
     --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
@@ -158,8 +158,8 @@
   /* Glass utilities with multiple intensity levels */
   .glass-light {
     background: rgba(var(--glass-bg-light), var(--glass-bg-light-opacity));
-    backdrop-filter: blur(4px) saturate(180%);
-    -webkit-backdrop-filter: blur(4px) saturate(180%);
+    backdrop-filter: blur(2px) saturate(180%);
+    -webkit-backdrop-filter: blur(2px) saturate(180%);
     border: 1px solid rgba(var(--glass-border-light), var(--glass-border-light-opacity));
     box-shadow: var(--shadow-glass);
     position: relative;
@@ -180,8 +180,8 @@
   
   .glass-medium {
     background: rgba(var(--glass-bg-medium), var(--glass-bg-medium-opacity));
-    backdrop-filter: blur(6px) saturate(180%);
-    -webkit-backdrop-filter: blur(6px) saturate(180%);
+    backdrop-filter: blur(3px) saturate(180%);
+    -webkit-backdrop-filter: blur(3px) saturate(180%);
     border: 1px solid rgba(var(--glass-border-medium), var(--glass-border-medium-opacity));
     box-shadow: var(--shadow-glass-medium);
     position: relative;
@@ -202,8 +202,8 @@
   
   .glass-strong {
     background: rgba(var(--glass-bg-strong), var(--glass-bg-strong-opacity));
-    backdrop-filter: blur(12px) saturate(180%);
-    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    backdrop-filter: blur(6px) saturate(180%);
+    -webkit-backdrop-filter: blur(6px) saturate(180%);
     border: 1px solid rgba(var(--glass-border-strong), var(--glass-border-strong-opacity));
     box-shadow: var(--shadow-glass-strong);
     position: relative;
@@ -241,6 +241,17 @@
   .glass-nav {
     @apply glass-strong;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-glass-strong), 
+                0 8px 24px rgba(0, 0, 0, 0.15),
+                0 4px 12px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+  
+  .dark .glass-nav {
+    box-shadow: var(--shadow-glass-strong),
+                0 8px 24px rgba(0, 0, 0, 0.4),
+                0 4px 12px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.08);
   }
   
   /* Navigation active indicator animation */
@@ -262,10 +273,10 @@
   
   /* Glass for fixed positioned elements (like sheets) */
   .glass-fixed {
-    background: rgba(var(--glass-bg-strong), 0.15);
-    backdrop-filter: blur(8px) saturate(150%);
-    -webkit-backdrop-filter: blur(8px) saturate(150%);
-    border: 1px solid rgba(var(--glass-border-strong), 0.15);
+    background: rgba(var(--glass-bg-strong), 0.18);
+    backdrop-filter: blur(4px) saturate(150%);
+    -webkit-backdrop-filter: blur(4px) saturate(150%);
+    border: 1px solid rgba(var(--glass-border-strong), 0.18);
     box-shadow: var(--shadow-glass-strong);
   }
   
@@ -275,7 +286,7 @@
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -283,7 +294,7 @@
   }
   
   .dark .glass-fixed::before {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.005) 100%);
   }
 }
 

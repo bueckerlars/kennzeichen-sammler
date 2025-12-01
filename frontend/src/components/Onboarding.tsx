@@ -12,12 +12,10 @@ export function Onboarding() {
   const {
     isActive,
     currentStep,
-    startOnboarding,
     endOnboarding,
     nextStep,
     previousStep,
     skipOnboarding,
-    isCompleted,
   } = useOnboarding();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -213,46 +211,52 @@ export function Onboarding() {
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === onboardingSteps.length - 1;
 
-  // Create clip-path for spotlight effect
-  const getClipPath = () => {
-    if (!spotlightRect) return 'none';
-    
-    const padding = 8;
-    const x = spotlightRect.left - padding;
-    const y = spotlightRect.top - padding;
-    const width = spotlightRect.width + padding * 2;
-    const height = spotlightRect.height + padding * 2;
-
-    return `polygon(
-      0% 0%,
-      0% 100%,
-      ${x}px 100%,
-      ${x}px ${y}px,
-      ${x + width}px ${y}px,
-      ${x + width}px ${y + height}px,
-      ${x}px ${y + height}px,
-      ${x}px 100%,
-      100% 100%,
-      100% 0%
-    )`;
+  // Get unique mask ID for SVG mask
+  const getMaskId = () => {
+    return `onboarding-mask-${currentStep}`;
   };
 
   return (
     <div className="fixed inset-0 z-[9999] pointer-events-none">
-      {/* Overlay with spotlight */}
+      {/* SVG Mask definition for rounded spotlight */}
+      {spotlightRect && (
+        <svg 
+          width="100%" 
+          height="100%" 
+          style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
+          className="opacity-0"
+        >
+          <defs>
+            <mask id={getMaskId()}>
+              <rect width="100%" height="100%" fill="white"/>
+              <rect 
+                x={spotlightRect.left - 8} 
+                y={spotlightRect.top - 8} 
+                width={spotlightRect.width + 16} 
+                height={spotlightRect.height + 16} 
+                rx="24" 
+                ry="24" 
+                fill="black"
+              />
+            </mask>
+          </defs>
+        </svg>
+      )}
+
+      {/* Overlay with spotlight using mask */}
       <div
         ref={overlayRef}
         className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
         style={{
-          clipPath: getClipPath(),
-          WebkitClipPath: getClipPath(),
+          maskImage: spotlightRect ? `url(#${getMaskId()})` : 'none',
+          WebkitMaskImage: spotlightRect ? `url(#${getMaskId()})` : 'none',
         }}
       />
       
       {/* Highlight border around target */}
       {targetElement && spotlightRect && (
         <div
-          className="absolute pointer-events-none border-2 border-primary rounded-2xl shadow-[0_0_0_4px_rgba(0,0,0,0.3),0_0_20px_rgba(var(--primary),0.5)] transition-all duration-300"
+          className="absolute pointer-events-none border-2 border-primary rounded-3xl shadow-[0_0_0_4px_rgba(0,0,0,0.3),0_0_20px_rgba(var(--primary),0.5)] transition-all duration-300"
           style={{
             left: `${spotlightRect.left - 8}px`,
             top: `${spotlightRect.top - 8}px`,
