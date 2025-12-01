@@ -27,7 +27,7 @@ build:
 	@echo "Building docker-compose services (postgres, backend, frontend)..."
 	$(DOCKER_COMPOSE) build
 	@echo "Building fullstack Docker image $(FULLSTACK_IMAGE):$(TAG)..."
-	docker build -f Dockerfile.fullstack -t $(FULLSTACK_IMAGE):$(TAG) .
+	docker build --platform linux/amd64 -f Dockerfile.fullstack -t $(FULLSTACK_IMAGE):$(TAG) .
 
 deploy:
 	@echo "Starting application stack via docker compose..."
