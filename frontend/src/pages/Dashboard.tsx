@@ -64,17 +64,42 @@ export default function Dashboard() {
     }
   }, [popoverOpen]);
 
+  // Helper function to check if results have actually changed
+  const resultsChanged = (oldResults: LicensePlate[], newResults: LicensePlate[]): boolean => {
+    if (oldResults.length !== newResults.length) {
+      return true;
+    }
+    const oldIds = new Set(oldResults.map(r => r.id));
+    const newIds = new Set(newResults.map(r => r.id));
+    if (oldIds.size !== newIds.size) {
+      return true;
+    }
+    for (const id of oldIds) {
+      if (!newIds.has(id)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   useEffect(() => {
     const searchPlates = async () => {
       if (searchQuery.length < 1) {
         setSearchResults([]);
+        setSearchLoading(false);
         return;
       }
 
       setSearchLoading(true);
       try {
         const plates = await licensePlateApi.search(searchQuery);
-        setSearchResults(plates);
+        // Only update results if they have actually changed
+        setSearchResults((prevResults) => {
+          if (resultsChanged(prevResults, plates)) {
+            return plates;
+          }
+          return prevResults;
+        });
       } catch (error) {
         console.error('Search failed', error);
       } finally {
@@ -84,6 +109,13 @@ export default function Dashboard() {
 
     const timeoutId = setTimeout(searchPlates, 300);
     return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  // Close popover when search query is cleared
+  useEffect(() => {
+    if (searchQuery.length === 0) {
+      setPopoverOpen(false);
+    }
   }, [searchQuery]);
 
   const handleAddToCollection = async (plateId: string) => {
@@ -162,7 +194,7 @@ export default function Dashboard() {
           <div className="flex items-center gap-4">
             <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
               <PopoverAnchor asChild>
-                <div className="relative w-80">
+                <div className="relative w-[500px]">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                   <Input
                     ref={inputRef}
@@ -199,23 +231,21 @@ export default function Dashboard() {
               </PopoverAnchor>
               <PopoverContent className="w-[500px] p-0" align="end" onOpenAutoFocus={(e) => e.preventDefault()}>
                 <div className="max-h-[600px] overflow-y-auto">
-                  {searchLoading && (
-                    <div className="p-4 text-center text-muted-foreground">
-                      Lädt...
-                    </div>
-                  )}
-                  {!searchLoading && searchQuery.length > 0 && searchResults.length === 0 && (
+                  {searchQuery.length > 0 && searchResults.length === 0 && !searchLoading && (
                     <div className="p-4 text-center text-muted-foreground">
                       Keine Ergebnisse gefunden
                     </div>
                   )}
-                  {!searchLoading && searchQuery.length === 0 && (
-                    <div className="p-4 text-center text-muted-foreground">
-                      Beginne mit der Suche...
-                    </div>
-                  )}
-                  {!searchLoading && searchResults.length > 0 && (
+                  {searchQuery.length > 0 && searchResults.length > 0 && (
                     <div className="divide-y">
+                      {searchLoading && (
+                        <div className="p-2 border-b bg-muted/50">
+                          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                            <div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                            <span>Suche läuft...</span>
+                          </div>
+                        </div>
+                      )}
                       {searchResults.map((plate) => {
                         const collectionEntry = collections.find(
                           (c) => c.licensePlateId === plate.id,
