@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { licensePlateApi, collectionApi } from '../services/api';
 import type { LicensePlate, UserCollection, SearchResult, ViewType } from '../types';
@@ -7,6 +7,7 @@ import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { ArrowLeft, Plus, Trash2, Search as SearchIcon, Table, Grid } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
+import { useIsMobile } from '../hooks/use-mobile';
 import {
   Table as TableComponent,
   TableBody,
@@ -36,6 +37,7 @@ export default function Search() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   
   const [query, setQuery] = useState(searchParams.get('q') || '');
   const [results, setResults] = useState<LicensePlate[]>([]);
@@ -45,9 +47,17 @@ export default function Search() {
   const [collections, setCollections] = useState<UserCollection[]>([]);
   const [removing, setRemoving] = useState<string | null>(null);
   
+  // For mobile endless scroll
+  const [mobileResults, setMobileResults] = useState<LicensePlate[]>([]);
+  const [mobileCurrentPage, setMobileCurrentPage] = useState(1);
+  const [mobileLoadingMore, setMobileLoadingMore] = useState(false);
+  const [mobileHasMore, setMobileHasMore] = useState(false);
+  const observerTarget = useRef<HTMLDivElement>(null);
+  
   const page = parseInt(searchParams.get('page') || '1');
   const limit = parseInt(searchParams.get('limit') || '20');
-  const view = (searchParams.get('view') || 'table') as ViewType;
+  // On mobile, always use table view (compact)
+  const view = (isMobile ? 'table' : (searchParams.get('view') || 'table')) as ViewType;
 
   const totalPages = Math.ceil(total / limit);
 
@@ -64,7 +74,10 @@ export default function Search() {
     loadCollection();
   }, []);
 
+  // Desktop search with pagination
   useEffect(() => {
+    if (isMobile) return; // Skip on mobile, handled separately
+
     const searchPlates = async () => {
       if (query.length < 1) {
         setResults([]);
@@ -94,7 +107,91 @@ export default function Search() {
 
     const timeoutId = setTimeout(searchPlates, 300);
     return () => clearTimeout(timeoutId);
-  }, [query, page, limit]);
+  }, [query, page, limit, isMobile]);
+
+  // Mobile endless scroll - initial search
+  useEffect(() => {
+    if (!isMobile || query.length < 1) {
+      setMobileResults([]);
+      setMobileCurrentPage(1);
+      setMobileHasMore(false);
+      return;
+    }
+
+    const searchPlates = async () => {
+      setLoading(true);
+      setMobileCurrentPage(1);
+      try {
+        const result = await licensePlateApi.search(query, 1, limit);
+        if (result && typeof result === 'object' && 'data' in result) {
+          const searchResult = result as SearchResult;
+          setMobileResults(searchResult.data);
+          setTotal(searchResult.total);
+          setMobileHasMore(searchResult.data.length < searchResult.total);
+        } else {
+          setMobileResults([]);
+          setTotal(0);
+          setMobileHasMore(false);
+        }
+      } catch (error) {
+        console.error('Search failed', error);
+        setMobileResults([]);
+        setTotal(0);
+        setMobileHasMore(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const timeoutId = setTimeout(searchPlates, 300);
+    return () => clearTimeout(timeoutId);
+  }, [query, limit, isMobile]);
+
+  // Mobile endless scroll - load more
+  const loadMoreMobile = useCallback(async () => {
+    if (!isMobile || !query || mobileLoadingMore || !mobileHasMore) return;
+
+    setMobileLoadingMore(true);
+    try {
+      const nextPage = mobileCurrentPage + 1;
+      const result = await licensePlateApi.search(query, nextPage, limit);
+      if (result && typeof result === 'object' && 'data' in result) {
+        const searchResult = result as SearchResult;
+        setMobileResults((prev) => [...prev, ...searchResult.data]);
+        setMobileCurrentPage(nextPage);
+        setMobileHasMore(searchResult.data.length === limit && (nextPage * limit) < searchResult.total);
+      }
+    } catch (error) {
+      console.error('Load more failed', error);
+    } finally {
+      setMobileLoadingMore(false);
+    }
+  }, [isMobile, query, limit, mobileCurrentPage, mobileLoadingMore, mobileHasMore]);
+
+  // Intersection Observer for mobile endless scroll
+  useEffect(() => {
+    if (!isMobile || !mobileHasMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMoreMobile();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [isMobile, mobileHasMore, loadMoreMobile]);
 
   // Update URL when query changes
   useEffect(() => {
@@ -207,11 +304,11 @@ export default function Search() {
 
     return (
       <Pagination>
-        <PaginationContent>
+        <PaginationContent className={isMobile ? 'gap-1' : ''}>
           <PaginationItem>
             <PaginationPrevious
               onClick={() => page > 1 && handlePageChange(page - 1)}
-              className={page === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+              className={`${page === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'} ${isMobile ? 'min-h-[44px] min-w-[44px]' : ''}`}
             />
           </PaginationItem>
           {pages.map((p, idx) => (
@@ -222,7 +319,7 @@ export default function Search() {
                 <PaginationLink
                   onClick={() => handlePageChange(p)}
                   isActive={p === page}
-                  className="cursor-pointer"
+                  className={`cursor-pointer ${isMobile ? 'min-h-[44px] min-w-[44px]' : ''}`}
                 >
                   {p}
                 </PaginationLink>
@@ -232,7 +329,7 @@ export default function Search() {
           <PaginationItem>
             <PaginationNext
               onClick={() => page < totalPages && handlePageChange(page + 1)}
-              className={page === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+              className={`${page === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'} ${isMobile ? 'min-h-[44px] min-w-[44px]' : ''}`}
             />
           </PaginationItem>
         </PaginationContent>
@@ -241,20 +338,11 @@ export default function Search() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/dashboard')}
-          className="mb-4"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Zurück zum Dashboard
-        </Button>
-
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold mb-4">Kennzeichen suchen</h1>
-          <div className="relative max-w-2xl">
+    <div className="min-h-screen bg-background pb-20 md:pb-0">
+      {/* Sticky Search Bar on Mobile */}
+      {isMobile && (
+        <div className="sticky top-0 z-40 bg-background border-b px-2 py-3 md:hidden">
+          <div className="relative w-full">
             <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
@@ -265,41 +353,80 @@ export default function Search() {
             />
           </div>
         </div>
+      )}
+
+      <div className="container mx-auto px-2 md:px-4 py-4 md:py-8">
+        {!isMobile && (
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/dashboard')}
+            className="mb-4"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Zurück zum Dashboard
+          </Button>
+        )}
+
+        {!isMobile && (
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold mb-4">Kennzeichen suchen</h1>
+            <div className="relative max-w-2xl">
+              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Suche nach Code, Stadt oder Bundesland..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </div>
+        )}
+
+        {isMobile && !query && (
+          <div className="mb-4">
+            <h1 className="text-2xl font-bold">Kennzeichen suchen</h1>
+          </div>
+        )}
 
         {query && (
-          <div className="mb-4 flex items-center justify-between gap-4 flex-wrap">
-            <div className="flex items-center gap-2">
-              <Button
-                variant={view === 'table' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => handleViewChange('table')}
-              >
-                <Table className="h-4 w-4 mr-2" />
-                Tabelle
-              </Button>
-              <Button
-                variant={view === 'gallery' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => handleViewChange('gallery')}
-              >
-                <Grid className="h-4 w-4 mr-2" />
-                Galerie
-              </Button>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Ergebnisse pro Seite:</span>
-              <Select value={limit.toString()} onValueChange={handleLimitChange}>
-                <SelectTrigger className="w-[120px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                  <SelectItem value="100">100</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className={`mb-4 flex items-center ${isMobile ? 'justify-between' : 'justify-between'} gap-4 flex-wrap`}>
+            {!isMobile && (
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={view === 'table' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleViewChange('table')}
+                >
+                  <Table className="h-4 w-4 mr-2" />
+                  Tabelle
+                </Button>
+                <Button
+                  variant={view === 'gallery' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleViewChange('gallery')}
+                >
+                  <Grid className="h-4 w-4 mr-2" />
+                  Galerie
+                </Button>
+              </div>
+            )}
+            {!isMobile && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Ergebnisse pro Seite:</span>
+                <Select value={limit.toString()} onValueChange={handleLimitChange}>
+                  <SelectTrigger className="w-[120px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                    <SelectItem value="100">100</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
         )}
 
@@ -318,78 +445,131 @@ export default function Search() {
           </Card>
         )}
 
-        {!loading && query && results.length > 0 && (
+        {!loading && query && (isMobile ? mobileResults.length > 0 : results.length > 0) && (
           <>
-            <div className="mb-4 text-sm text-muted-foreground">
+            <div className={`mb-4 text-sm text-muted-foreground ${isMobile ? 'text-center' : ''}`}>
               {total} Ergebnis{total !== 1 ? 'se' : ''} gefunden
             </div>
 
             {view === 'table' ? (
-              <Card>
-                <TableComponent>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Code</TableHead>
-                      <TableHead>Stadt</TableHead>
-                      <TableHead>Region</TableHead>
-                      <TableHead>Bundesland</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Aktion</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {results.map((plate) => {
-                      const collectionEntry = collections.find(
-                        (c) => c.licensePlateId === plate.id,
-                      );
-                      const inCollection = !!collectionEntry;
+              isMobile ? (
+                <div className="space-y-1">
+                  {(isMobile ? mobileResults : results).map((plate) => {
+                    const collectionEntry = collections.find(
+                      (c) => c.licensePlateId === plate.id,
+                    );
+                    const inCollection = !!collectionEntry;
 
-                      return (
-                        <TableRow key={plate.id}>
-                          <TableCell className="font-semibold">{plate.code}</TableCell>
-                          <TableCell>{plate.city}</TableCell>
-                          <TableCell>{plate.region || '-'}</TableCell>
-                          <TableCell>{plate.state}</TableCell>
-                          <TableCell>
-                            {inCollection && (
-                              <span className="text-xs font-semibold text-emerald-600 border border-emerald-600 rounded px-2 py-0.5">
-                                In Sammlung
-                              </span>
-                            )}
-                          </TableCell>
-                          <TableCell className="text-right">
+                    return (
+                      <Card key={plate.id} className="p-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="font-semibold text-sm">{plate.code}</div>
+                              {inCollection && (
+                                <span className="text-[10px] font-semibold text-emerald-600 border border-emerald-600 rounded px-1.5 py-0.5 whitespace-nowrap shrink-0">
+                                  ✓
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-xs text-muted-foreground truncate">
+                              {plate.city} • {plate.state}
+                            </div>
+                          </div>
+                          <div className="shrink-0">
                             {inCollection ? (
                               <Button
                                 variant="destructive"
                                 size="sm"
-                                className="w-32"
+                                className="h-8 px-2 text-xs"
                                 onClick={() => handleRemoveFromCollection(collectionEntry.id)}
                                 disabled={removing === collectionEntry.id}
                               >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                {removing === collectionEntry.id ? 'Entfernt...' : 'Entfernen'}
+                                <Trash2 className="h-3 w-3" />
                               </Button>
                             ) : (
                               <Button
                                 size="sm"
-                                className="w-32"
+                                className="h-8 px-2 text-xs"
                                 onClick={() => handleAddToCollection(plate.id)}
                                 disabled={adding === plate.id}
                               >
-                                <Plus className="h-4 w-4 mr-2" />
-                                {adding === plate.id ? 'Hinzufügen...' : 'Hinzufügen'}
+                                <Plus className="h-3 w-3" />
                               </Button>
                             )}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </TableComponent>
-              </Card>
+                          </div>
+                        </div>
+                      </Card>
+                    );
+                  })}
+                </div>
+              ) : (
+                <Card>
+                  <TableComponent>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Code</TableHead>
+                        <TableHead>Stadt</TableHead>
+                        <TableHead>Region</TableHead>
+                        <TableHead>Bundesland</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Aktion</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {results.map((plate) => {
+                        const collectionEntry = collections.find(
+                          (c) => c.licensePlateId === plate.id,
+                        );
+                        const inCollection = !!collectionEntry;
+
+                        return (
+                          <TableRow key={plate.id}>
+                            <TableCell className="font-semibold">{plate.code}</TableCell>
+                            <TableCell>{plate.city}</TableCell>
+                            <TableCell>{plate.region || '-'}</TableCell>
+                            <TableCell>{plate.state}</TableCell>
+                            <TableCell>
+                              {inCollection && (
+                                <span className="text-xs font-semibold text-emerald-600 border border-emerald-600 rounded px-2 py-0.5">
+                                  In Sammlung
+                                </span>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {inCollection ? (
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  className="w-32"
+                                  onClick={() => handleRemoveFromCollection(collectionEntry.id)}
+                                  disabled={removing === collectionEntry.id}
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  {removing === collectionEntry.id ? 'Entfernt...' : 'Entfernen'}
+                                </Button>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  className="w-32"
+                                  onClick={() => handleAddToCollection(plate.id)}
+                                  disabled={adding === plate.id}
+                                >
+                                  <Plus className="h-4 w-4 mr-2" />
+                                  {adding === plate.id ? 'Hinzufügen...' : 'Hinzufügen'}
+                                </Button>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </TableComponent>
+                </Card>
+              )
             ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {results.map((plate) => {
+              <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                {(isMobile ? mobileResults : results).map((plate) => {
                   const collectionEntry = collections.find(
                     (c) => c.licensePlateId === plate.id,
                   );
@@ -423,7 +603,7 @@ export default function Search() {
                         </div>
                         {inCollection ? (
                           <Button
-                            className="w-full mt-4"
+                            className="w-full mt-4 min-h-[44px] touch-manipulation"
                             variant="destructive"
                             onClick={() => handleRemoveFromCollection(collectionEntry.id)}
                             disabled={removing === collectionEntry.id}
@@ -435,7 +615,7 @@ export default function Search() {
                           </Button>
                         ) : (
                           <Button
-                            className="w-full mt-4"
+                            className="w-full mt-4 min-h-[44px] touch-manipulation"
                             onClick={() => handleAddToCollection(plate.id)}
                             disabled={adding === plate.id}
                           >
@@ -452,9 +632,24 @@ export default function Search() {
               </div>
             )}
 
-            <div className="mt-8">
-              {renderPagination()}
-            </div>
+            {/* Mobile endless scroll trigger */}
+            {isMobile && mobileHasMore && (
+              <div ref={observerTarget} className="py-4 flex justify-center">
+                {mobileLoadingMore && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <div className="h-5 w-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    <span>Lädt weitere Ergebnisse...</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Desktop pagination */}
+            {!isMobile && (
+              <div className="mt-8">
+                {renderPagination()}
+              </div>
+            )}
           </>
         )}
 

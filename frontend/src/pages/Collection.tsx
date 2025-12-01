@@ -5,9 +5,11 @@ import type { UserCollection } from '../types';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { ArrowLeft, Trash2 } from 'lucide-react';
+import { useIsMobile } from '../hooks/use-mobile';
 
 export default function Collection() {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [collections, setCollections] = useState<UserCollection[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
@@ -53,18 +55,20 @@ export default function Collection() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/dashboard')}
-          className="mb-4"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Zurück zum Dashboard
-        </Button>
+    <div className="min-h-screen bg-background pb-20 md:pb-0">
+      <div className="container mx-auto px-2 md:px-4 py-4 md:py-8">
+        {!isMobile && (
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/dashboard')}
+            className="mb-4"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Zurück zum Dashboard
+          </Button>
+        )}
 
-        <h1 className="text-3xl font-bold mb-6">Meine Sammlung</h1>
+        <h1 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold ${isMobile ? 'mb-4' : 'mb-6'}`}>Meine Sammlung</h1>
 
         {collections.length === 0 ? (
           <Card>
@@ -73,12 +77,12 @@ export default function Collection() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {collections.map((collection) => (
               <Card key={collection.id}>
                 <CardHeader>
                   <div className="flex justify-between items-start">
-                    <CardTitle className="text-2xl">
+                    <CardTitle className={`${isMobile ? 'text-xl' : 'text-2xl'}`}>
                       {collection.licensePlate?.code}
                     </CardTitle>
                     <Button
@@ -86,6 +90,7 @@ export default function Collection() {
                       size="icon"
                       onClick={() => handleRemove(collection.id)}
                       disabled={deleting === collection.id}
+                      className="min-h-[44px] min-w-[44px] touch-manipulation"
                     >
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
