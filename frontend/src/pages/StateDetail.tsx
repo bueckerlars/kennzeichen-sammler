@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { licensePlateApi, collectionApi, statisticsApi } from '../services/api';
-import type { LicensePlate, UserCollection, SearchResult, Statistics } from '../types';
+import type { LicensePlate, UserCollection } from '../types';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
@@ -46,7 +46,6 @@ export default function StateDetail() {
   const [adding, setAdding] = useState<string | null>(null);
   const [collections, setCollections] = useState<UserCollection[]>([]);
   const [removing, setRemoving] = useState<string | null>(null);
-  const [statistics, setStatistics] = useState<Statistics | null>(null);
   const [stateStats, setStateStats] = useState<{ total: number; collected: number; missing: number } | null>(null);
   
   // For mobile endless scroll
@@ -73,7 +72,6 @@ export default function StateDetail() {
   const loadStatistics = async () => {
     try {
       const stats = await statisticsApi.getUserStatistics();
-      setStatistics(stats);
       // Find statistics for current state
       if (stateName && stats.byState) {
         const stateStat = stats.byState.find(s => s.state === decodeURIComponent(stateName));
