@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { statisticsApi, licensePlateApi, collectionApi } from '../services/api';
-import type { Statistics, LicensePlate, UserCollection } from '../types';
+import type { Statistics, LicensePlate, UserCollection, SearchResult } from '../types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { UserMenu } from '../components/UserMenu';
 import { useNavigate } from 'react-router-dom';
@@ -19,6 +19,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<LicensePlate[]>([]);
+  const [searchTotal, setSearchTotal] = useState(0);
   const [searchLoading, setSearchLoading] = useState(false);
   const [collections, setCollections] = useState<UserCollection[]>([]);
   const [adding, setAdding] = useState<string | null>(null);
@@ -86,13 +87,17 @@ export default function Dashboard() {
     const searchPlates = async () => {
       if (searchQuery.length < 1) {
         setSearchResults([]);
+        setSearchTotal(0);
         setSearchLoading(false);
         return;
       }
 
       setSearchLoading(true);
       try {
-        const plates = await licensePlateApi.search(searchQuery);
+        const result = await licensePlateApi.search(searchQuery);
+        // Backend always returns SearchResult now
+        const searchResult = result as SearchResult;
+        const plates = searchResult.data;
         // Only update results if they have actually changed
         setSearchResults((prevResults) => {
           if (resultsChanged(prevResults, plates)) {
@@ -100,8 +105,12 @@ export default function Dashboard() {
           }
           return prevResults;
         });
+        // Always use total from SearchResult for accurate count
+        setSearchTotal(searchResult.total);
       } catch (error) {
         console.error('Search failed', error);
+        setSearchResults([]);
+        setSearchTotal(0);
       } finally {
         setSearchLoading(false);
       }
@@ -246,7 +255,7 @@ export default function Dashboard() {
                           </div>
                         </div>
                       )}
-                      {searchResults.map((plate) => {
+                      {searchResults.slice(0, 3).map((plate) => {
                         const collectionEntry = collections.find(
                           (c) => c.licensePlateId === plate.id,
                         );
@@ -312,6 +321,20 @@ export default function Dashboard() {
                           </div>
                         );
                       })}
+                      {searchTotal > 3 && (
+                        <div className="p-4 border-t">
+                          <Button
+                            className="w-full"
+                            variant="outline"
+                            onClick={() => {
+                              setPopoverOpen(false);
+                              navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+                            }}
+                          >
+                            Mehr Anzeigen ({searchTotal - Math.min(3, searchResults.length)} weitere)
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

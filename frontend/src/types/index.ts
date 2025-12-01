@@ -41,3 +41,12 @@ export interface LeaderboardEntry {
   count: number;
 }
 
+export interface SearchResult {
+  data: LicensePlate[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export type ViewType = 'table' | 'gallery';
+

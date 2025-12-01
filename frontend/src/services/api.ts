@@ -5,6 +5,7 @@ import type {
   UserCollection,
   Statistics,
   LeaderboardEntry,
+  SearchResult,
 } from '../types';
 
 const api = axios.create({
@@ -48,9 +49,22 @@ export const licensePlateApi = {
     return response.data;
   },
 
-  search: async (query: string): Promise<LicensePlate[]> => {
-    const response = await api.get(`/license-plates/search?q=${encodeURIComponent(query)}`);
-    return response.data;
+  search: async (query: string, page?: number, limit?: number): Promise<SearchResult | LicensePlate[]> => {
+    const params = new URLSearchParams();
+    params.append('q', query);
+    if (page !== undefined && limit !== undefined) {
+      params.append('page', page.toString());
+      params.append('limit', limit.toString());
+    }
+    const response = await api.get(`/license-plates/search?${params.toString()}`);
+    // Backend always returns SearchResult now, even without pagination params
+    // If pagination params are provided, return SearchResult, otherwise return the data array for backward compatibility
+    if (page !== undefined && limit !== undefined) {
+      return response.data as SearchResult;
+    }
+    // For backward compatibility, return SearchResult when no pagination params
+    // The Dashboard can extract both data and total from it
+    return response.data as SearchResult;
   },
 };
 

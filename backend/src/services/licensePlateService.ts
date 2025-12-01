@@ -1,6 +1,13 @@
 import { AppDataSource } from '../config/database';
 import { LicensePlate } from '../models/LicensePlate';
 
+export interface SearchResult {
+  data: LicensePlate[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 export class LicensePlateService {
   private licensePlateRepository =
     AppDataSource.getRepository(LicensePlate);
@@ -11,10 +18,11 @@ export class LicensePlateService {
     });
   }
 
-  async search(query: string): Promise<LicensePlate[]> {
+  async search(query: string, page: number = 1, limit: number = 20): Promise<SearchResult> {
     const normalizedQuery = query.toLowerCase();
+    const skip = (page - 1) * limit;
 
-    return await this.licensePlateRepository
+    const queryBuilder = this.licensePlateRepository
       .createQueryBuilder('plate')
       .where('LOWER(plate.code) LIKE :containsQuery', {
         containsQuery: `%${normalizedQuery}%`,
@@ -39,8 +47,19 @@ export class LicensePlateService {
         prefixQuery: `${normalizedQuery}%`,
       })
       .orderBy('relevance', 'ASC')
-      .addOrderBy('plate.code', 'ASC')
-      .getMany();
+      .addOrderBy('plate.code', 'ASC');
+
+    const [data, total] = await queryBuilder
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount();
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+    };
   }
 
   async getById(id: string): Promise<LicensePlate | null> {

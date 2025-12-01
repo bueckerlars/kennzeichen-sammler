@@ -4,6 +4,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { Toaster } from './components/ui/toaster';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import Search from './pages/Search';
 import Collection from './pages/Collection';
 import Leaderboard from './pages/Leaderboard';
 
@@ -34,6 +35,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/search"
+        element={
+          <ProtectedRoute>
+            <Search />
           </ProtectedRoute>
         }
       />
