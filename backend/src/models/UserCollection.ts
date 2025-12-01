@@ -20,7 +20,7 @@ export class UserCollection {
   @JoinColumn({ name: 'userId' })
   user!: User;
 
-  @Column()
+  @Column({ type: 'uuid' })
   userId!: string;
 
   @ManyToOne(() => LicensePlate, (plate) => plate.collections, {
@@ -29,7 +29,7 @@ export class UserCollection {
   @JoinColumn({ name: 'licensePlateId' })
   licensePlate!: LicensePlate;
 
-  @Column()
+  @Column({ type: 'uuid' })
   licensePlateId!: string;
 
   @Column({ type: 'date' })

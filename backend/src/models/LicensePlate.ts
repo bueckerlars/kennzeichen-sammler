@@ -11,16 +11,16 @@ export class LicensePlate {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', unique: true })
   code!: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   city!: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   region?: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   state!: string;
 
   @OneToMany(() => UserCollection, (collection) => collection.licensePlate)
