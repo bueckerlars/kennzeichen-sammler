@@ -57,6 +57,7 @@ export default function Login() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                className="border border-input bg-background shadow-md focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:shadow-lg"
                 required
               />
             </div>
@@ -67,6 +68,7 @@ export default function Login() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="border border-input bg-background shadow-md focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:shadow-lg"
                 required
               />
             </div>

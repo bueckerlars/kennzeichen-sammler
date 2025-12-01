@@ -42,6 +42,11 @@ export function MobileNavigation() {
     }
   }, [location.pathname]);
 
+  // Hide navigation on login/register pages
+  if (location.pathname === '/login') {
+    return null;
+  }
+
   if (!isMobile) {
     return null;
   }
