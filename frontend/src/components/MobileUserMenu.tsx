@@ -12,7 +12,6 @@ import {
 import { Button } from './ui/button';
 import { Moon, Sun, Monitor, LogOut, X } from 'lucide-react';
 import { cn } from '../lib/utils';
-import versionData from '../../../version.json';
 
 export function MobileUserMenu() {
   const { user, logout } = useAuth();
@@ -105,7 +104,7 @@ export function MobileUserMenu() {
         <div className="mt-auto px-6 pb-6 pt-4 border-t border-border/50 space-y-3">
           <div className="text-center">
             <p className="text-xs text-muted-foreground">
-              Version {versionData.version}
+              Version {import.meta.env.VITE_APP_VERSION || '1.0.0'}
             </p>
           </div>
           <Button

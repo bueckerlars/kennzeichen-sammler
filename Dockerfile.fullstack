@@ -17,6 +17,11 @@ RUN npm run build
 ########################
 FROM --platform=linux/amd64 node:20-alpine AS frontend-builder
 
+WORKDIR /app
+
+# Copy version.json first so it's available for the build
+COPY version.json ./
+
 WORKDIR /app/frontend
 
 COPY frontend/package*.json ./
