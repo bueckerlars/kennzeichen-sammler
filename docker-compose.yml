@@ -18,11 +18,11 @@ services:
       timeout: 5s
       retries: 5
 
-  backend:
+  fullstack:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: kennzeichen-backend
+      context: .
+      dockerfile: Dockerfile.fullstack
+    container_name: kennzeichen-fullstack
     environment:
       NODE_ENV: production
       PORT: 3001
@@ -38,23 +38,10 @@ services:
     volumes:
       - sqlite_data:/data
     ports:
-      - "3001:3001"
+      - "8080:80"
     depends_on:
       postgres:
         condition: service_healthy
-    networks:
-      - app-network
-    restart: unless-stopped
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: kennzeichen-frontend
-    ports:
-      - "3000:80"
-    depends_on:
-      - backend
     networks:
       - app-network
     restart: unless-stopped
