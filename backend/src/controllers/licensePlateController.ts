@@ -15,7 +15,7 @@ export class LicensePlateController {
 
   async search(req: Request, res: Response) {
     try {
-      const query = req.query.q as string;
+      const query = (req.query.q as string)?.trim();
       if (!query) {
         return res.status(400).json({ error: 'Query parameter required' });
       }

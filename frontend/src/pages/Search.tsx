@@ -40,7 +40,7 @@ export default function Search() {
   const { toast } = useToast();
   const isMobile = useIsMobile();
   
-  const [query, setQuery] = useState(searchParams.get('q') || '');
+  const [query, setQuery] = useState((searchParams.get('q') || '').trim());
   const [results, setResults] = useState<LicensePlate[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -352,7 +352,7 @@ export default function Search() {
                   type="text"
                   placeholder="Suche nach Code, Stadt oder Bundesland..."
                   value={query}
-                  onChange={(e) => setQuery(e.target.value)}
+                  onChange={(e) => setQuery(e.target.value.trim())}
                   className="pl-12 pr-4 py-4 h-auto rounded-3xl bg-transparent border-0 focus-visible:ring-2 focus-visible:ring-primary/20 transition-all duration-300"
                 />
               </div>
@@ -385,7 +385,7 @@ export default function Search() {
                 type="text"
                 placeholder="Suche nach Code, Stadt oder Bundesland..."
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => setQuery(e.target.value.trim())}
                 className="pl-10 bg-transparent"
               />
             </div>
