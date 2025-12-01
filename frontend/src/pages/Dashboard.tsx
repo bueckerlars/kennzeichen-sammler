@@ -636,8 +636,9 @@ export default function Dashboard() {
                     return (
                       <div
                         key={state.state}
-                        className="glass-light rounded-2xl p-3 transition-colors duration-300"
+                        className="glass-light rounded-2xl p-3 transition-colors duration-300 cursor-pointer hover:bg-muted/50 active:bg-muted touch-manipulation"
                         style={{ animationDelay: `${0.5 + index * 0.05}s` }}
+                        onClick={() => navigate(`/state/${encodeURIComponent(state.state)}`)}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex-1 min-w-0">
@@ -672,8 +673,9 @@ export default function Dashboard() {
                       {statistics.byState.map((state, index) => (
                         <tr 
                           key={state.state} 
-                          className="border-b border-border/30 transition-colors duration-300"
+                          className="border-b border-border/30 transition-colors duration-300 cursor-pointer hover:bg-muted/50"
                           style={{ animationDelay: `${0.5 + index * 0.05}s` }}
+                          onClick={() => navigate(`/state/${encodeURIComponent(state.state)}`)}
                         >
                           <td className="p-3">{state.state}</td>
                           <td className="text-right p-3">{state.total}</td>

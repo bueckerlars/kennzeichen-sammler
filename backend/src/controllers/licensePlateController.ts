@@ -54,5 +54,41 @@ export class LicensePlateController {
       res.status(500).json({ error: 'Search failed' });
     }
   }
+
+  async getByState(req: Request, res: Response) {
+    try {
+      const state = (req.query.state as string)?.trim();
+      if (!state) {
+        return res.status(400).json({ error: 'State parameter required' });
+      }
+
+      // Parse pagination parameters
+      const hasPage = req.query.page !== undefined;
+      const hasLimit = req.query.limit !== undefined;
+      
+      let page = 1;
+      let limit = 20;
+      
+      if (hasPage) {
+        page = parseInt(req.query.page as string) || 1;
+      }
+      if (hasLimit) {
+        limit = parseInt(req.query.limit as string) || 20;
+      }
+
+      // Validate parameters
+      if (page < 1) {
+        return res.status(400).json({ error: 'Page must be greater than 0' });
+      }
+      if (limit < 1 || limit > 10000) {
+        return res.status(400).json({ error: 'Limit must be between 1 and 10000' });
+      }
+
+      const result = await licensePlateService.getByState(state, page, limit);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch license plates by state' });
+    }
+  }
 }
 

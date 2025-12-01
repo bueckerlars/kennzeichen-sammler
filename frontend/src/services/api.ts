@@ -66,6 +66,17 @@ export const licensePlateApi = {
     // The Dashboard can extract both data and total from it
     return response.data as SearchResult;
   },
+
+  getByState: async (state: string, page?: number, limit?: number): Promise<SearchResult> => {
+    const params = new URLSearchParams();
+    params.append('state', state);
+    if (page !== undefined && limit !== undefined) {
+      params.append('page', page.toString());
+      params.append('limit', limit.toString());
+    }
+    const response = await api.get(`/license-plates/by-state?${params.toString()}`);
+    return response.data as SearchResult;
+  },
 };
 
 // Collection API

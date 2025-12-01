@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard';
 import Search from './pages/Search';
 import Collection from './pages/Collection';
 import Leaderboard from './pages/Leaderboard';
+import StateDetail from './pages/StateDetail';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -71,6 +72,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Leaderboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/state/:stateName"
+        element={
+          <ProtectedRoute>
+            <StateDetail />
           </ProtectedRoute>
         }
       />

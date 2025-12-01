@@ -9,6 +9,10 @@ router.get(
   '/search',
   licensePlateController.search.bind(licensePlateController)
 );
+router.get(
+  '/by-state',
+  licensePlateController.getByState.bind(licensePlateController)
+);
 
 export default router;
 

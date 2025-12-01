@@ -213,5 +213,38 @@ export class LicensePlateService {
   async getByCode(code: string): Promise<LicensePlate | null> {
     return await this.licensePlateRepository.findOne({ where: { code } });
   }
+
+  async getByState(state: string, page: number = 1, limit: number = 20): Promise<SearchResult> {
+    if (!state || !state.trim()) {
+      return {
+        data: [],
+        total: 0,
+        page,
+        limit,
+      };
+    }
+
+    const skip = (page - 1) * limit;
+
+    // Get total count
+    const total = await this.licensePlateRepository.count({
+      where: { state: state.trim() },
+    });
+
+    // Get paginated results
+    const data = await this.licensePlateRepository.find({
+      where: { state: state.trim() },
+      order: { code: 'ASC' },
+      skip,
+      take: limit,
+    });
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+    };
+  }
 }
 
